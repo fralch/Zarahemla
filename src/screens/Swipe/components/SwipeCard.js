@@ -13,6 +13,7 @@ const SwipeCard = ({ user }) => {
             </View>
             <View style={styles.info}>
                 <Text style={styles.name}>{user.name}, {user.age}</Text>
+                {user.bio && <Text style={styles.bio}>{user.bio}</Text>}
             </View>
         </View>
     );
@@ -50,6 +51,11 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         color: colors.text,
+    },
+    bio: {
+        fontSize: 16,
+        color: colors.textSecondary,
+        marginTop: 5,
     },
 });
 

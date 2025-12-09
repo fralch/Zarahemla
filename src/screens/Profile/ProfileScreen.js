@@ -3,23 +3,45 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../../theme/colors';
 
 const ProfileScreen = () => {
+    // Mock user data
+    const user = {
+        name: 'María García',
+        age: 25,
+        bio: 'Amante de los viajes y la fotografía',
+        instagram: '@mariagarcia',
+        whatsapp: '+54 9 11 1234-5678',
+    };
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style={styles.avatar} />
-                <Text style={styles.name}>Mi Perfil</Text>
+                <Text style={styles.name}>{user.name}, {user.age}</Text>
+                <Text style={styles.bio}>{user.bio}</Text>
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Información de Contacto</Text>
+                <View style={styles.infoCard}>
+                    <Text style={styles.infoLabel}>Instagram</Text>
+                    <Text style={styles.infoValue}>{user.instagram}</Text>
+                </View>
+                <View style={styles.infoCard}>
+                    <Text style={styles.infoLabel}>WhatsApp</Text>
+                    <Text style={styles.infoValue}>{user.whatsapp}</Text>
+                </View>
             </View>
 
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Ajustes</Text>
                 <TouchableOpacity style={styles.option}>
-                    <Text>Editar Información</Text>
+                    <Text style={styles.optionText}>Editar Información</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.option}>
-                    <Text>Preferencias</Text>
+                    <Text style={styles.optionText}>Preferencias</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.option}>
-                    <Text style={{ color: colors.error }}>Cerrar Sesión</Text>
+                    <Text style={[styles.optionText, { color: colors.error }]}>Cerrar Sesión</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -51,6 +73,12 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: colors.text,
     },
+    bio: {
+        fontSize: 16,
+        color: colors.textSecondary,
+        marginTop: 5,
+        textAlign: 'center',
+    },
     section: {
         padding: 20,
     },
@@ -61,11 +89,31 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         marginTop: 10,
     },
+    infoCard: {
+        backgroundColor: colors.white,
+        padding: 15,
+        borderRadius: 10,
+        marginBottom: 10,
+    },
+    infoLabel: {
+        fontSize: 12,
+        color: colors.textSecondary,
+        marginBottom: 5,
+    },
+    infoValue: {
+        fontSize: 16,
+        color: colors.text,
+        fontWeight: '500',
+    },
     option: {
         backgroundColor: colors.white,
         padding: 15,
         borderRadius: 10,
         marginBottom: 10,
+    },
+    optionText: {
+        fontSize: 16,
+        color: colors.text,
     },
 });
 
