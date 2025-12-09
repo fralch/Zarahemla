@@ -59,7 +59,7 @@ const SwipeScreen = () => {
                         />
                         <View style={styles.buttonsContainer}>
                             <TouchableOpacity
-                                style={[styles.button, styles.rejectButton, { backgroundColor: colors.card, shadowColor: colors.border }]}
+                                style={[styles.button, styles.rejectButton, { backgroundColor: colors.card }]}
                                 onPress={triggerSwipeLeft}
                             >
                                 <Ionicons name="close" size={30} color={colors.error} />
@@ -123,7 +123,15 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
     },
     rejectButton: {
-        // backgroundColor: 'white', // override dynamically
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+
+        elevation: 8,
     },
     likeButton: {
         // backgroundColor: colors.primary, // override dynamically
