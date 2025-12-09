@@ -8,17 +8,34 @@ import MatchesScreen from '../screens/Matches';
 import ProfileScreen from '../screens/Profile';
 import { colors } from '../theme/colors';
 
+import { Ionicons } from '@expo/vector-icons';
+
+// ... imports
+
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function MainTabs() {
     return (
         <Tab.Navigator
-            screenOptions={{
+            screenOptions={({ route }) => ({
                 headerShown: false,
                 tabBarActiveTintColor: colors.primary,
                 tabBarInactiveTintColor: colors.textSecondary,
-            }}
+                tabBarIcon: ({ focused, color, size }) => {
+                    let iconName;
+
+                    if (route.name === 'Swipe') {
+                        iconName = focused ? 'albums' : 'albums-outline';
+                    } else if (route.name === 'Matches') {
+                        iconName = focused ? 'heart' : 'heart-outline';
+                    } else if (route.name === 'Profile') {
+                        iconName = focused ? 'person' : 'person-outline';
+                    }
+
+                    return <Ionicons name={iconName} size={size} color={color} />;
+                },
+            })}
         >
             <Tab.Screen name="Swipe" component={SwipeScreen} />
             <Tab.Screen name="Matches" component={MatchesScreen} />

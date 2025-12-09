@@ -2,10 +2,16 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Image } from 'react-native';
 import { colors } from '../../theme/colors';
 
+import { MATCHES_DATA } from '../../data/mockData';
+
 const MatchItem = ({ item }) => (
     <View style={styles.itemContainer}>
-        <View style={[styles.avatar, { backgroundColor: item.color || colors.primary }]} />
-        <Text style={styles.name}>{item.name}</Text>
+        <Image
+            source={{ uri: item.image }}
+            style={styles.avatar}
+        />
+        <Text style={styles.name}>{item.name}, {item.age}</Text>
+        <Text style={styles.bio} numberOfLines={2}>{item.bio}</Text>
         <View style={styles.actions}>
             <TouchableOpacity
                 style={[styles.actionButton, styles.instaButton]}
@@ -26,22 +32,11 @@ const MatchItem = ({ item }) => (
 );
 
 const MatchesScreen = () => {
-    const matches = [
-        { id: '1', name: 'Ana', instagram: 'https://instagram.com/ana', whatsapp: '5491123456789', color: '#FF6B6B' },
-        { id: '2', name: 'Beto', instagram: 'https://instagram.com/beto', whatsapp: '5491198765432', color: '#4ECDC4' },
-        { id: '3', name: 'Carolina', instagram: 'https://instagram.com/carolina', whatsapp: '5491187654321', color: '#95E1D3' },
-        { id: '4', name: 'Diego', instagram: 'https://instagram.com/diego', color: '#F38181' },
-        { id: '5', name: 'Emilia', instagram: 'https://instagram.com/emilia', whatsapp: '5491176543210', color: '#AA96DA' },
-        { id: '6', name: 'Fernando', instagram: 'https://instagram.com/fernando', whatsapp: '5491165432109', color: '#FCBAD3' },
-        { id: '7', name: 'Gabriela', instagram: 'https://instagram.com/gabriela', color: '#A8D8EA' },
-        { id: '8', name: 'Hernán', instagram: 'https://instagram.com/hernan', whatsapp: '5491154321098', color: '#FFD93D' },
-    ];
-
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Matches</Text>
             <FlatList
-                data={matches}
+                data={MATCHES_DATA}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <MatchItem item={item} />}
                 numColumns={2}
@@ -90,7 +85,14 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 16,
         fontWeight: '600',
+        marginBottom: 5,
+    },
+    bio: {
+        fontSize: 12,
+        color: colors.textSecondary || '#666',
+        textAlign: 'center',
         marginBottom: 10,
+        height: 30,
     },
     actions: {
         flexDirection: 'row',

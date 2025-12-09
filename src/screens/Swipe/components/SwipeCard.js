@@ -8,8 +8,11 @@ const SwipeCard = ({ user }) => {
     return (
         <View style={styles.card}>
             <View style={styles.imageContainer}>
-                {/* Placeholder for actual image if user doesn't have one */}
-                <View style={[styles.image, { backgroundColor: user.color || colors.primary }]} />
+                {user.image ? (
+                    <Image source={{ uri: user.image }} style={styles.image} resizeMode="cover" />
+                ) : (
+                    <View style={[styles.image, { backgroundColor: user.color || colors.primary }]} />
+                )}
             </View>
             <View style={styles.info}>
                 <Text style={styles.name}>{user.name}, {user.age}</Text>

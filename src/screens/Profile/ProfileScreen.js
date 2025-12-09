@@ -1,21 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { colors } from '../../theme/colors';
+import { CURRENT_USER } from '../../data/mockData';
 
 const ProfileScreen = () => {
-    // Mock user data
-    const user = {
-        name: 'María García',
-        age: 25,
-        bio: 'Amante de los viajes y la fotografía',
-        instagram: '@mariagarcia',
-        whatsapp: '+54 9 11 1234-5678',
-    };
+    // Mock user data from simulated data file
+    const user = CURRENT_USER;
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <View style={styles.avatar} />
+                <Image
+                    source={{ uri: user.image }}
+                    style={styles.avatar}
+                />
                 <Text style={styles.name}>{user.name}, {user.age}</Text>
                 <Text style={styles.bio}>{user.bio}</Text>
             </View>
