@@ -9,6 +9,7 @@ import Animated, {
     interpolate,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTheme } from '../../../theme/ThemeContext';
 import { colors } from '../../../theme/colors';
 
 const { width, height } = Dimensions.get('window');
@@ -16,6 +17,9 @@ const { width, height } = Dimensions.get('window');
 const SWIPE_THRESHOLD = width * 0.3;
 
 const SwipeCard = ({ user, onSwipeLeft, onSwipeRight }) => {
+    const { theme } = useTheme();
+    const colors = theme.colors;
+
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
     const startX = useSharedValue(0);
@@ -84,7 +88,7 @@ const SwipeCard = ({ user, onSwipeLeft, onSwipeRight }) => {
 
     return (
         <GestureDetector gesture={gesture}>
-            <Animated.View style={[styles.card, animatedStyle]}>
+            <Animated.View style={[styles.card, animatedStyle, { backgroundColor: colors.card }]}>
                 {user.image ? (
                     <Image source={{ uri: user.image }} style={styles.image} resizeMode="cover" />
                 ) : (
@@ -102,11 +106,11 @@ const SwipeCard = ({ user, onSwipeLeft, onSwipeRight }) => {
                 </LinearGradient>
 
                 {/* Like/Nope labels */}
-                <Animated.View style={[styles.likeLabel, likeOpacity]}>
-                    <Text style={styles.likeLabelText}>ME GUSTA</Text>
+                <Animated.View style={[styles.likeLabel, { borderColor: colors.success }, likeOpacity]}>
+                    <Text style={[styles.likeLabelText, { color: colors.success }]}>ME GUSTA</Text>
                 </Animated.View>
-                <Animated.View style={[styles.nopeLabel, nopeOpacity]}>
-                    <Text style={styles.nopeLabelText}>NOPE</Text>
+                <Animated.View style={[styles.nopeLabel, { borderColor: colors.error }, nopeOpacity]}>
+                    <Text style={[styles.nopeLabelText, { color: colors.error }]}>NOPE</Text>
                 </Animated.View>
             </Animated.View>
         </GestureDetector>

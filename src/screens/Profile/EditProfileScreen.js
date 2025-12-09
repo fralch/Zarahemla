@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { useTheme } from '../../theme/ThemeContext';
 import { colors } from '../../theme/colors';
 import { CURRENT_USER } from '../../data/mockData';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +11,9 @@ const EditProfileScreen = ({ navigation }) => {
     const [bio, setBio] = useState(CURRENT_USER.bio);
     const [instagram, setInstagram] = useState(CURRENT_USER.instagram);
     const [whatsapp, setWhatsapp] = useState(CURRENT_USER.whatsapp);
+    
+    const { theme } = useTheme();
+    const colors = theme.colors;
 
     const handleSave = () => {
         // Here you would typically update the user data in your backend or global state
@@ -26,12 +30,12 @@ const EditProfileScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color={colors.text} />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Editar Perfil</Text>
+                <Text style={[styles.headerTitle, { color: colors.text }]}>Editar Perfil</Text>
                 <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
                     <Text style={styles.saveButtonText}>Guardar</Text>
                 </TouchableOpacity>
@@ -39,57 +43,62 @@ const EditProfileScreen = ({ navigation }) => {
 
             <ScrollView style={styles.content}>
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Nombre</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>Nombre</Text>
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
                         value={name}
                         onChangeText={setName}
                         placeholder="Tu nombre"
+                        placeholderTextColor={colors.textSecondary}
                     />
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Edad</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>Edad</Text>
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
                         value={age}
                         onChangeText={setAge}
                         keyboardType="numeric"
                         placeholder="Tu edad"
+                        placeholderTextColor={colors.textSecondary}
                     />
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Descripción</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>Descripción</Text>
                     <TextInput
-                        style={[styles.input, styles.textArea]}
+                        style={[styles.input, styles.textArea, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
                         value={bio}
                         onChangeText={setBio}
                         multiline
                         numberOfLines={4}
                         placeholder="Cuéntanos sobre ti..."
+                        placeholderTextColor={colors.textSecondary}
                         textAlignVertical="top"
                     />
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Instagram</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>Instagram</Text>
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
                         value={instagram}
                         onChangeText={setInstagram}
                         placeholder="@usuario"
+                        placeholderTextColor={colors.textSecondary}
                     />
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={styles.label}>WhatsApp</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>WhatsApp</Text>
                     <TextInput
-                        style={styles.input}
+                        style={[styles.input, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
                         value={whatsapp}
                         onChangeText={setWhatsapp}
                         keyboardType="phone-pad"
                         placeholder="+54 9 11..."
+                        placeholderTextColor={colors.textSecondary}
                     />
                 </View>
             </ScrollView>

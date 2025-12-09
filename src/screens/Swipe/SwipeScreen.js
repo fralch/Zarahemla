@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Dimensions, TouchableOpacity } from 'react-native';
-import { colors } from '../../theme/colors';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '../../theme/ThemeContext';
 import SwipeCard from './components/SwipeCard';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -9,6 +10,8 @@ import { MATCHES_DATA } from '../../data/mockData';
 const SwipeScreen = () => {
     // Mock data
     const users = MATCHES_DATA;
+    const { theme } = useTheme();
+    const colors = theme.colors;
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -29,7 +32,7 @@ const SwipeScreen = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={styles.cardContainer}>
                 {currentIndex < users.length ? (
                     <>
@@ -41,13 +44,13 @@ const SwipeScreen = () => {
                         />
                         <View style={styles.buttonsContainer}>
                             <TouchableOpacity
-                                style={[styles.button, styles.rejectButton]}
+                                style={[styles.button, styles.rejectButton, { backgroundColor: colors.card, shadowColor: colors.border }]}
                                 onPress={handleSwipeLeft}
                             >
                                 <Ionicons name="close" size={30} color={colors.error} />
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.button, styles.likeButton]}
+                                style={[styles.button, styles.likeButton, { backgroundColor: colors.primary }]}
                                 onPress={handleSwipeRight}
                             >
                                 <Ionicons name="heart" size={30} color={colors.white} />
@@ -56,16 +59,16 @@ const SwipeScreen = () => {
                     </>
                 ) : (
                     <View style={styles.noMoreCards}>
-                        <View style={styles.emptyStateIcon}>
+                        <View style={[styles.emptyStateIcon, { backgroundColor: colors.card }]}>
                             <Ionicons name="people-outline" size={80} color={colors.textSecondary} />
                         </View>
-                        <Text style={styles.noMoreText}>No hay más perfiles por ahora</Text>
-                        <Text style={styles.noMoreSubText}>Vuelve más tarde para ver nuevas personas.</Text>
+                        <Text style={[styles.noMoreText, { color: colors.text }]}>No hay más perfiles por ahora</Text>
+                        <Text style={[styles.noMoreSubText, { color: colors.textSecondary }]}>Vuelve más tarde para ver nuevas personas.</Text>
                         <TouchableOpacity
-                            style={styles.resetButton}
+                            style={[styles.resetButton, { backgroundColor: colors.primary }]}
                             onPress={() => setCurrentIndex(0)}
                         >
-                            <Text style={styles.resetButtonText}>Volver a empezar</Text>
+                            <Text style={[styles.resetButtonText, { color: colors.white }]}>Volver a empezar</Text>
                         </TouchableOpacity>
                     </View>
                 )}
@@ -77,7 +80,6 @@ const SwipeScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.gray,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -98,23 +100,20 @@ const styles = StyleSheet.create({
         width: 64,
         height: 64,
         borderRadius: 32,
-        justifyContent: 'center',
         alignItems: 'center',
+        justifyContent: 'center',
         elevation: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
         shadowRadius: 5,
-        backgroundColor: colors.white, // Default base
     },
     rejectButton: {
-        backgroundColor: colors.white,
-        borderWidth: 1,
-        borderColor: colors.gray,
+        // backgroundColor: 'white', // override dynamically
     },
     likeButton: {
-        backgroundColor: colors.primary, // Heart/Primary color
-        transform: [{ scale: 1.1 }], // Slightly bigger
+        // backgroundColor: colors.primary, // override dynamically
+        shadowColor: '#FF4458',
+        shadowOpacity: 0.4,
     },
     noMoreCards: {
         alignItems: 'center',
@@ -122,40 +121,34 @@ const styles = StyleSheet.create({
         padding: 40,
     },
     emptyStateIcon: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        backgroundColor: colors.white,
+        width: 150,
+        height: 150,
+        borderRadius: 75,
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 20,
+        marginBottom: 30,
         elevation: 2,
     },
     noMoreText: {
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: 'bold',
-        color: colors.text,
         textAlign: 'center',
         marginBottom: 10,
     },
     noMoreSubText: {
         fontSize: 16,
-        color: colors.textSecondary,
         textAlign: 'center',
-        marginBottom: 30,
+        marginBottom: 40,
+        lineHeight: 24,
     },
     resetButton: {
-        backgroundColor: colors.white,
-        paddingHorizontal: 40,
         paddingVertical: 15,
+        paddingHorizontal: 40,
         borderRadius: 30,
-        elevation: 2,
-        borderWidth: 1,
-        borderColor: colors.primary,
+        elevation: 3,
     },
     resetButtonText: {
-        color: colors.primary,
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
     },
 });

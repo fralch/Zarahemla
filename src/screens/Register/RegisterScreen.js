@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Image, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Image } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTheme } from '../../theme/ThemeContext';
 import { colors } from '../../theme/colors';
 import * as ImagePicker from 'expo-image-picker';
 import RegisterInput from './components/RegisterInput';
@@ -12,6 +14,9 @@ const RegisterScreen = ({ navigation }) => {
     const [instagram, setInstagram] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
     const [image, setImage] = useState(null);
+    
+    const { theme } = useTheme();
+    const colors = theme.colors;
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -38,20 +43,20 @@ const RegisterScreen = ({ navigation }) => {
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
             <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>Crear Cuenta</Text>
-                    <Text style={styles.subtitle}>¡Empieza a conocer gente nueva!</Text>
+                    <Text style={[styles.title, { color: colors.text }]}>Crear Cuenta</Text>
+                    <Text style={[styles.subtitle, { color: colors.textSecondary }]}>¡Empieza a conocer gente nueva!</Text>
                 </View>
 
                 <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
                     {image ? (
                         <Image source={{ uri: image }} style={styles.image} />
                     ) : (
-                        <View style={styles.placeholderImage}>
+                        <View style={[styles.placeholderImage, { backgroundColor: colors.inputBackground }]}>
                             <Ionicons name="camera" size={40} color={colors.textSecondary} />
-                            <Text style={styles.placeholderText}>Agregar Foto</Text>
+                            <Text style={[styles.placeholderText, { color: colors.textSecondary }]}>Agregar Foto</Text>
                         </View>
                     )}
-                    <View style={styles.editIconBadge}>
+                    <View style={[styles.editIconBadge, { backgroundColor: colors.primary }]}>
                         <Ionicons name="pencil" size={16} color="white" />
                     </View>
                 </TouchableOpacity>

@@ -7,7 +7,7 @@ import SwipeScreen from '../screens/Swipe';
 import MatchesScreen from '../screens/Matches';
 import ProfileScreen from '../screens/Profile';
 import EditProfileScreen from '../screens/Profile/EditProfileScreen';
-import { colors } from '../theme/colors';
+import { useTheme } from '../theme/ThemeContext';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,12 +17,17 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function MainTabs() {
+    const { theme } = useTheme();
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 headerShown: false,
-                tabBarActiveTintColor: colors.primary,
-                tabBarInactiveTintColor: colors.textSecondary,
+                tabBarActiveTintColor: theme.colors.primary,
+                tabBarInactiveTintColor: theme.colors.textSecondary,
+                tabBarStyle: {
+                    backgroundColor: theme.colors.background,
+                    borderTopColor: theme.colors.border,
+                },
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
 
@@ -46,8 +51,9 @@ function MainTabs() {
 }
 
 export default function AppNavigator() {
+    const { theme } = useTheme();
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={theme}>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="Register" component={RegisterScreen} />
                 <Stack.Screen name="MainTabs" component={MainTabs} />

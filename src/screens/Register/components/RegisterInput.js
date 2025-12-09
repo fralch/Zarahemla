@@ -1,11 +1,14 @@
 import React from 'react';
 import { TextInput, StyleSheet, View } from 'react-native';
-import { colors } from '../../../theme/colors';
+import { useTheme } from '../../../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
 const RegisterInput = ({ value, onChangeText, placeholder, icon, ...props }) => {
+    const { theme } = useTheme();
+    const colors = theme.colors;
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.inputBackground, borderColor: colors.border }]}>
             {icon && (
                 <Ionicons
                     name={icon}
@@ -15,7 +18,7 @@ const RegisterInput = ({ value, onChangeText, placeholder, icon, ...props }) => 
                 />
             )}
             <TextInput
-                style={styles.input}
+                style={[styles.input, { color: colors.text }]}
                 placeholder={placeholder}
                 value={value}
                 onChangeText={onChangeText}
@@ -32,12 +35,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         height: 55, // Slightly taller for better touch target
-        backgroundColor: colors.gray, // Softer background
         borderRadius: 15, // More rounded
         marginBottom: 15,
         paddingHorizontal: 15,
         borderWidth: 1,
-        borderColor: 'transparent', // Cleaner look, maybe add focus state later if needed
     },
     icon: {
         marginRight: 10,
@@ -45,7 +46,6 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         height: '100%',
-        color: colors.text,
         fontSize: 16,
     },
 });
