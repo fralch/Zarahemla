@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { colors } from '../../theme/colors';
 import { CURRENT_USER } from '../../data/mockData';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
     // Mock user data from simulated data file
-    const user = CURRENT_USER;
+    const [user, setUser] = useState(CURRENT_USER);
+
+    useFocusEffect(
+        useCallback(() => {
+            // Force update user data when screen comes into focus
+            setUser({ ...CURRENT_USER });
+        }, [])
+    );
 
     return (
         <View style={styles.container}>
@@ -32,7 +40,10 @@ const ProfileScreen = () => {
 
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Ajustes</Text>
-                <TouchableOpacity style={styles.option}>
+                <TouchableOpacity 
+                    style={styles.option}
+                    onPress={() => navigation.navigate('EditProfile')}
+                >
                     <Text style={styles.optionText}>Editar Información</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.option}>

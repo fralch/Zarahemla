@@ -6,6 +6,7 @@ import RegisterScreen from '../screens/Register';
 import SwipeScreen from '../screens/Swipe';
 import MatchesScreen from '../screens/Matches';
 import ProfileScreen from '../screens/Profile';
+import EditProfileScreen from '../screens/Profile/EditProfileScreen';
 import { colors } from '../theme/colors';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -50,6 +51,7 @@ export default function AppNavigator() {
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="Register" component={RegisterScreen} />
                 <Stack.Screen name="MainTabs" component={MainTabs} />
+                <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
