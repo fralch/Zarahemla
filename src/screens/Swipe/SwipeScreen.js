@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
@@ -12,6 +12,8 @@ const SwipeScreen = () => {
     const users = MATCHES_DATA;
     const { theme } = useTheme();
     const colors = theme.colors;
+    
+    const swipeCardRef = useRef(null);
 
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -30,6 +32,18 @@ const SwipeScreen = () => {
             setCurrentIndex(currentIndex + 1);
         }
     };
+    
+    const triggerSwipeLeft = () => {
+        if (swipeCardRef.current) {
+            swipeCardRef.current.swipeLeft();
+        }
+    };
+
+    const triggerSwipeRight = () => {
+        if (swipeCardRef.current) {
+            swipeCardRef.current.swipeRight();
+        }
+    };
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -37,6 +51,7 @@ const SwipeScreen = () => {
                 {currentIndex < users.length ? (
                     <>
                         <SwipeCard
+                            ref={swipeCardRef}
                             key={users[currentIndex].id}
                             user={users[currentIndex]}
                             onSwipeLeft={handleSwipeLeft}
@@ -45,13 +60,13 @@ const SwipeScreen = () => {
                         <View style={styles.buttonsContainer}>
                             <TouchableOpacity
                                 style={[styles.button, styles.rejectButton, { backgroundColor: colors.card, shadowColor: colors.border }]}
-                                onPress={handleSwipeLeft}
+                                onPress={triggerSwipeLeft}
                             >
                                 <Ionicons name="close" size={30} color={colors.error} />
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.button, styles.likeButton, { backgroundColor: colors.primary }]}
-                                onPress={handleSwipeRight}
+                                onPress={triggerSwipeRight}
                             >
                                 <Ionicons name="heart" size={30} color={colors.white} />
                             </TouchableOpacity>

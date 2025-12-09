@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef, useImperativeHandle } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -17,7 +17,7 @@ const { width, height } = Dimensions.get('window');
 
 const SWIPE_THRESHOLD = width * 0.3;
 
-const SwipeCard = ({ user, onSwipeLeft, onSwipeRight }) => {
+const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
     const { theme } = useTheme();
     const colors = theme.colors;
 
@@ -25,6 +25,19 @@ const SwipeCard = ({ user, onSwipeLeft, onSwipeRight }) => {
     const translateY = useSharedValue(0);
     const startX = useSharedValue(0);
     const startY = useSharedValue(0);
+
+    useImperativeHandle(ref, () => ({
+        swipeLeft: () => {
+            translateX.value = withSpring(-width * 1.5, {}, () => {
+                runOnJS(onSwipeLeft)();
+            });
+        },
+        swipeRight: () => {
+            translateX.value = withSpring(width * 1.5, {}, () => {
+                runOnJS(onSwipeRight)();
+            });
+        },
+    }));
 
     const gesture = Gesture.Pan()
         .onStart(() => {
@@ -116,7 +129,7 @@ const SwipeCard = ({ user, onSwipeLeft, onSwipeRight }) => {
             </Animated.View>
         </GestureDetector>
     );
-};
+});
 
 const styles = StyleSheet.create({
     card: {
