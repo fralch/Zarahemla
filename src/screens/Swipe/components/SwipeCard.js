@@ -9,6 +9,7 @@ import Animated, {
     interpolate,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../theme/ThemeContext';
 import { colors } from '../../../theme/colors';
 
@@ -107,10 +108,10 @@ const SwipeCard = ({ user, onSwipeLeft, onSwipeRight }) => {
 
                 {/* Like/Nope labels */}
                 <Animated.View style={[styles.likeLabel, { borderColor: colors.success }, likeOpacity]}>
-                    <Text style={[styles.likeLabelText, { color: colors.success }]}>ME GUSTA</Text>
+                    <Ionicons name="heart" size={80} color={colors.success} />
                 </Animated.View>
                 <Animated.View style={[styles.nopeLabel, { borderColor: colors.error }, nopeOpacity]}>
-                    <Text style={[styles.nopeLabelText, { color: colors.error }]}>NOPE</Text>
+                    <Ionicons name="close" size={80} color={colors.error} />
                 </Animated.View>
             </Animated.View>
         </GestureDetector>
@@ -175,11 +176,6 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: 'rgba(255, 255, 255, 0.2)', // Semi-transparent bg
     },
-    likeLabelText: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#4CAF50',
-    },
     nopeLabel: {
         position: 'absolute',
         top: 50,
@@ -190,11 +186,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    },
-    nopeLabelText: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: colors.error,
     },
 });
 
