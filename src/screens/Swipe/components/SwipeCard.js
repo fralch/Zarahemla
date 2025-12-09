@@ -8,6 +8,7 @@ import Animated, {
     runOnJS,
     interpolate,
 } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../../theme/colors';
 
 const { width, height } = Dimensions.get('window');
@@ -84,24 +85,29 @@ const SwipeCard = ({ user, onSwipeLeft, onSwipeRight }) => {
     return (
         <GestureDetector gesture={gesture}>
             <Animated.View style={[styles.card, animatedStyle]}>
-                <View style={styles.imageContainer}>
-                    {user.image ? (
-                        <Image source={{ uri: user.image }} style={styles.image} resizeMode="cover" />
-                    ) : (
-                        <View style={[styles.image, { backgroundColor: user.color || colors.primary }]} />
-                    )}
-                    {/* Like/Nope labels */}
-                    <Animated.View style={[styles.likeLabel, likeOpacity]}>
-                        <Text style={styles.likeLabelText}>ME GUSTA</Text>
-                    </Animated.View>
-                    <Animated.View style={[styles.nopeLabel, nopeOpacity]}>
-                        <Text style={styles.nopeLabelText}>NOPE</Text>
-                    </Animated.View>
-                </View>
-                <View style={styles.info}>
-                    <Text style={styles.name}>{user.name}, {user.age}</Text>
-                    {user.bio && <Text style={styles.bio}>{user.bio}</Text>}
-                </View>
+                {user.image ? (
+                    <Image source={{ uri: user.image }} style={styles.image} resizeMode="cover" />
+                ) : (
+                    <View style={[styles.image, { backgroundColor: user.color || colors.primary }]} />
+                )}
+
+                <LinearGradient
+                    colors={['transparent', 'rgba(0,0,0,0.8)']}
+                    style={styles.gradient}
+                >
+                    <View style={styles.info}>
+                        <Text style={styles.name}>{user.name}, {user.age}</Text>
+                        {user.bio && <Text style={styles.bio}>{user.bio}</Text>}
+                    </View>
+                </LinearGradient>
+
+                {/* Like/Nope labels */}
+                <Animated.View style={[styles.likeLabel, likeOpacity]}>
+                    <Text style={styles.likeLabelText}>ME GUSTA</Text>
+                </Animated.View>
+                <Animated.View style={[styles.nopeLabel, nopeOpacity]}>
+                    <Text style={styles.nopeLabelText}>NOPE</Text>
+                </Animated.View>
             </Animated.View>
         </GestureDetector>
     );
@@ -110,40 +116,49 @@ const SwipeCard = ({ user, onSwipeLeft, onSwipeRight }) => {
 const styles = StyleSheet.create({
     card: {
         width: width * 0.9,
-        height: height * 0.7,
+        height: height * 0.75, // Taller card
         backgroundColor: colors.white,
         borderRadius: 20,
         overflow: 'hidden',
-        elevation: 5,
+        elevation: 8,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-    },
-    imageContainer: {
-        flex: 1,
-        backgroundColor: colors.gray,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        position: 'relative',
     },
     image: {
         width: '100%',
         height: '100%',
     },
-    info: {
-        padding: 20,
-        backgroundColor: colors.white,
+    gradient: {
         position: 'absolute',
         bottom: 0,
-        width: '100%',
+        left: 0,
+        right: 0,
+        height: '40%', // Cover bottom 40% with gradient
+        justifyContent: 'flex-end',
+        padding: 20,
+    },
+    info: {
+        marginBottom: 20,
     },
     name: {
-        fontSize: 24,
+        fontSize: 32,
         fontWeight: 'bold',
-        color: colors.text,
+        color: colors.white,
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: { width: -1, height: 1 },
+        textShadowRadius: 10,
     },
     bio: {
-        fontSize: 16,
-        color: colors.textSecondary,
+        fontSize: 18,
+        color: colors.white,
         marginTop: 5,
+        fontWeight: '500',
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: { width: -1, height: 1 },
+        textShadowRadius: 10,
     },
     likeLabel: {
         position: 'absolute',
@@ -154,6 +169,7 @@ const styles = StyleSheet.create({
         borderColor: '#4CAF50',
         borderRadius: 10,
         padding: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)', // Semi-transparent bg
     },
     likeLabelText: {
         fontSize: 32,
@@ -169,6 +185,7 @@ const styles = StyleSheet.create({
         borderColor: colors.error,
         borderRadius: 10,
         padding: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
     },
     nopeLabelText: {
         fontSize: 32,

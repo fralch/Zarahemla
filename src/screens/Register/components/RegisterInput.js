@@ -1,31 +1,52 @@
 import React from 'react';
-import { TextInput, StyleSheet } from 'react-native';
+import { TextInput, StyleSheet, View } from 'react-native';
 import { colors } from '../../../theme/colors';
+import { Ionicons } from '@expo/vector-icons';
 
-const RegisterInput = ({ value, onChangeText, placeholder, ...props }) => {
+const RegisterInput = ({ value, onChangeText, placeholder, icon, ...props }) => {
     return (
-        <TextInput
-            style={styles.input}
-            placeholder={placeholder}
-            value={value}
-            onChangeText={onChangeText}
-            placeholderTextColor={colors.textSecondary}
-            {...props}
-        />
+        <View style={styles.container}>
+            {icon && (
+                <Ionicons
+                    name={icon}
+                    size={20}
+                    color={colors.textSecondary}
+                    style={styles.icon}
+                />
+            )}
+            <TextInput
+                style={styles.input}
+                placeholder={placeholder}
+                value={value}
+                onChangeText={onChangeText}
+                placeholderTextColor={colors.textSecondary}
+                {...props}
+            />
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    input: {
+    container: {
         width: '100%',
-        height: 50,
-        borderWidth: 1,
-        borderColor: colors.border,
-        borderRadius: 10,
-        paddingHorizontal: 15,
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: 55, // Slightly taller for better touch target
+        backgroundColor: colors.gray, // Softer background
+        borderRadius: 15, // More rounded
         marginBottom: 15,
-        backgroundColor: colors.white,
+        paddingHorizontal: 15,
+        borderWidth: 1,
+        borderColor: 'transparent', // Cleaner look, maybe add focus state later if needed
+    },
+    icon: {
+        marginRight: 10,
+    },
+    input: {
+        flex: 1,
+        height: '100%',
         color: colors.text,
+        fontSize: 16,
     },
 });
 
