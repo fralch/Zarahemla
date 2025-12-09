@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     },
     likeButton: {
         // backgroundColor: colors.primary, // override dynamically
-        shadowColor: '#FF4458',
+        shadowColor: '#FF5E78',
         shadowOpacity: 0.4,
     },
     noMoreCards: {
