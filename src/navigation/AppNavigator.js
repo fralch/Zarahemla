@@ -8,6 +8,7 @@ import MatchesScreen from '../screens/Matches';
 import ProfileScreen from '../screens/Profile';
 import EditProfileScreen from '../screens/Profile/EditProfileScreen';
 import { useTheme } from '../theme/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -18,6 +19,7 @@ const Stack = createStackNavigator();
 
 function MainTabs() {
     const { theme } = useTheme();
+    const { t } = useTranslation();
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -43,9 +45,21 @@ function MainTabs() {
                 },
             })}
         >
-            <Tab.Screen name="Swipe" component={SwipeScreen} />
-            <Tab.Screen name="Matches" component={MatchesScreen} />
-            <Tab.Screen name="Profile" component={ProfileScreen} />
+            <Tab.Screen 
+                name="Swipe" 
+                component={SwipeScreen} 
+                options={{ tabBarLabel: t('tabs.swipe') }}
+            />
+            <Tab.Screen 
+                name="Matches" 
+                component={MatchesScreen} 
+                options={{ tabBarLabel: t('tabs.matches') }}
+            />
+            <Tab.Screen 
+                name="Profile" 
+                component={ProfileScreen} 
+                options={{ tabBarLabel: t('tabs.profile') }}
+            />
         </Tab.Navigator>
     );
 }

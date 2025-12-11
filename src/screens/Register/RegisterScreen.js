@@ -7,8 +7,10 @@ import * as ImagePicker from 'expo-image-picker';
 import RegisterInput from './components/RegisterInput';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 const RegisterScreen = ({ navigation }) => {
+    const { t } = useTranslation();
     const [name, setName] = useState('');
     const [age, setAge] = useState('');
     const [instagram, setInstagram] = useState('');
@@ -33,7 +35,7 @@ const RegisterScreen = ({ navigation }) => {
 
     const handleRegister = () => {
         if (!name || !age || !instagram || !image) {
-            Alert.alert('Faltan datos', 'Por favor completa tu nombre, edad, instagram y foto.');
+            Alert.alert(t('register.missingData'), t('register.missingDataDesc'));
             return;
         }
         navigation.replace('MainTabs');
@@ -43,8 +45,8 @@ const RegisterScreen = ({ navigation }) => {
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
             <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                 <View style={styles.header}>
-                    <Text style={[styles.title, { color: colors.text }]}>Crear Cuenta</Text>
-                    <Text style={[styles.subtitle, { color: colors.textSecondary }]}>¡Empieza a conocer gente nueva!</Text>
+                    <Text style={[styles.title, { color: colors.text }]}>{t('register.createAccount')}</Text>
+                    <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{t('register.subtitle')}</Text>
                 </View>
 
                 <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
@@ -53,7 +55,7 @@ const RegisterScreen = ({ navigation }) => {
                     ) : (
                         <View style={[styles.placeholderImage, { backgroundColor: colors.inputBackground }]}>
                             <Ionicons name="camera" size={40} color={colors.textSecondary} />
-                            <Text style={[styles.placeholderText, { color: colors.textSecondary }]}>Agregar Foto</Text>
+                            <Text style={[styles.placeholderText, { color: colors.textSecondary }]}>{t('register.addPhoto')}</Text>
                         </View>
                     )}
                     <View style={[styles.editIconBadge, { backgroundColor: colors.primary }]}>
@@ -63,27 +65,27 @@ const RegisterScreen = ({ navigation }) => {
 
                 <View style={styles.form}>
                     <RegisterInput
-                        placeholder="Nombre"
+                        placeholder={t('register.name')}
                         value={name}
                         onChangeText={setName}
                         icon="person-outline"
                     />
                     <RegisterInput
-                        placeholder="Edad"
+                        placeholder={t('register.age')}
                         value={age}
                         onChangeText={setAge}
                         keyboardType="numeric"
                         icon="calendar-outline"
                     />
                     <RegisterInput
-                        placeholder="Instagram (Usuario o Link)"
+                        placeholder={t('register.instagram')}
                         value={instagram}
                         onChangeText={setInstagram}
                         autoCapitalize="none"
                         icon="logo-instagram"
                     />
                     <RegisterInput
-                        placeholder="WhatsApp (Opcional)"
+                        placeholder={t('register.whatsapp')}
                         value={whatsapp}
                         onChangeText={setWhatsapp}
                         keyboardType="phone-pad"
@@ -98,7 +100,7 @@ const RegisterScreen = ({ navigation }) => {
                         end={{ x: 1, y: 0 }}
                         style={styles.button}
                     >
-                        <Text style={styles.buttonText}>Comenzar</Text>
+                        <Text style={styles.buttonText}>{t('register.start')}</Text>
                         <Ionicons name="arrow-forward" size={24} color="white" style={styles.buttonIcon} />
                     </LinearGradient>
                 </TouchableOpacity>

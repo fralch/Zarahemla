@@ -4,11 +4,12 @@ import { useTheme } from '../../theme/ThemeContext';
 import { colors } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { MATCHES_DATA } from '../../data/mockData';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 40) / 2; // 20 padding on each side, divided by 2
 
-const MatchItem = ({ item, colors }) => (
+const MatchItem = ({ item, colors, t }) => (
     <View style={[styles.itemContainer, { backgroundColor: colors.card }]}>
         <Image
             source={{ uri: item.image }}
@@ -17,7 +18,7 @@ const MatchItem = ({ item, colors }) => (
         />
         <View style={styles.infoContainer}>
             <Text style={[styles.name, { color: colors.text }]}>{item.name}, {item.age}</Text>
-            <Text style={[styles.bio, { color: colors.textSecondary }]} numberOfLines={2}>{item.bio || 'Sin descripción'}</Text>
+            <Text style={[styles.bio, { color: colors.textSecondary }]} numberOfLines={2}>{item.bio || t('matches.noDescription')}</Text>
 
             <View style={styles.actions}>
                 <TouchableOpacity
@@ -43,17 +44,18 @@ const MatchItem = ({ item, colors }) => (
 const MatchesScreen = () => {
     const { theme } = useTheme();
     const colors = theme.colors;
+    const { t } = useTranslation();
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={[styles.headerContainer, { backgroundColor: colors.card, shadowColor: colors.border }]}>
-                <Text style={[styles.header, { color: colors.text }]}>Tus Matches</Text>
-                <Text style={[styles.subHeader, { color: colors.textSecondary }]}>Personas que les gustaste</Text>
+                <Text style={[styles.header, { color: colors.text }]}>{t('matches.title')}</Text>
+                <Text style={[styles.subHeader, { color: colors.textSecondary }]}>{t('matches.subtitle')}</Text>
             </View>
             <FlatList
                 data={MATCHES_DATA}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <MatchItem item={item} colors={colors} />}
+                renderItem={({ item }) => <MatchItem item={item} colors={colors} t={t} />}
                 numColumns={2}
                 contentContainerStyle={styles.list}
                 showsVerticalScrollIndicator={false}

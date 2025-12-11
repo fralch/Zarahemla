@@ -3,12 +3,14 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'rea
 import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../theme/ThemeContext';
 import { CURRENT_USER } from '../../data/mockData';
+import { useTranslation } from 'react-i18next';
 
 const ProfileScreen = ({ navigation }) => {
     // Mock user data from simulated data file
     const [user, setUser] = useState(CURRENT_USER);
     const { theme, toggleTheme, isDark } = useTheme();
     const colors = theme.colors;
+    const { t, i18n } = useTranslation();
 
     useFocusEffect(
         useCallback(() => {
@@ -16,6 +18,11 @@ const ProfileScreen = ({ navigation }) => {
             setUser({ ...CURRENT_USER });
         }, [])
     );
+
+    const toggleLanguage = () => {
+        const nextLanguage = i18n.language === 'es' ? 'en' : 'es';
+        i18n.changeLanguage(nextLanguage);
+    };
 
     return (
         <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -29,33 +36,39 @@ const ProfileScreen = ({ navigation }) => {
             </View>
 
             <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Información de Contacto</Text>
+                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('profile.contactInfo')}</Text>
                 <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
-                    <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Instagram</Text>
+                    <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>{t('profile.instagram')}</Text>
                     <Text style={[styles.infoValue, { color: colors.text }]}>{user.instagram}</Text>
                 </View>
                 <View style={[styles.infoCard, { backgroundColor: colors.card }]}>
-                    <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>WhatsApp</Text>
+                    <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>{t('profile.whatsapp')}</Text>
                     <Text style={[styles.infoValue, { color: colors.text }]}>{user.whatsapp}</Text>
                 </View>
             </View>
 
             <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Ajustes</Text>
+                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('profile.settings')}</Text>
                 <TouchableOpacity 
                     style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
                     onPress={() => navigation.navigate('EditProfile')}
                 >
-                    <Text style={[styles.optionText, { color: colors.text }]}>Editar Información</Text>
+                    <Text style={[styles.optionText, { color: colors.text }]}>{t('profile.editInfo')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
                     style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
                     onPress={toggleTheme}
                 >
-                    <Text style={[styles.optionText, { color: colors.text }]}>{isDark ? 'Modo Claro' : 'Modo Oscuro'}</Text>
+                    <Text style={[styles.optionText, { color: colors.text }]}>{isDark ? t('profile.lightMode') : t('profile.darkMode')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                    style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
+                    onPress={toggleLanguage}
+                >
+                    <Text style={[styles.optionText, { color: colors.text }]}>{t('profile.changeLanguage')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
-                    <Text style={[styles.optionText, { color: colors.error }]}>Cerrar Sesión</Text>
+                    <Text style={[styles.optionText, { color: colors.error }]}>{t('profile.logout')}</Text>
                 </TouchableOpacity>
             </View>
         </ScrollView>

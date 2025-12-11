@@ -1,0 +1,62 @@
+{
+  "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
+    "save": "Save",
+    "success": "Success",
+    "error": "Error"
+  },
+  "register": {
+    "missingData": "Missing data",
+    "missingDataDesc": "Please complete your name, age, instagram and photo.",
+    "createAccount": "Create Account",
+    "subtitle": "Start meeting new people!",
+    "addPhoto": "Add Photo",
+    "name": "Name",
+    "age": "Age",
+    "instagram": "Instagram (User or Link)",
+    "whatsapp": "WhatsApp (Optional)",
+    "start": "Get Started"
+  },
+  "matches": {
+    "noDescription": "No description",
+    "title": "Your Matches",
+    "subtitle": "People who liked you"
+  },
+  "profile": {
+    "contactInfo": "Contact Information",
+    "settings": "Settings",
+    "editInfo": "Edit Information",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "logout": "Log Out",
+    "instagram": "Instagram",
+    "whatsapp": "WhatsApp",
+    "changeLanguage": "Change Language"
+  },
+  "editProfile": {
+    "successMessage": "Profile updated successfully",
+    "title": "Edit Profile",
+    "save": "Save",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "ageLabel": "Age",
+    "agePlaceholder": "Your age",
+    "bioLabel": "Description",
+    "bioPlaceholder": "Tell us about yourself...",
+    "instagramLabel": "Instagram",
+    "instagramPlaceholder": "@username",
+    "whatsappLabel": "WhatsApp",
+    "whatsappPlaceholder": "+1 555..."
+  },
+  "swipe": {
+    "noMoreProfiles": "No more profiles for now",
+    "comeBackLater": "Come back later to see new people.",
+    "startOver": "Start over"
+  },
+  "tabs": {
+    "swipe": "Explore",
+    "matches": "Matches",
+    "profile": "Profile"
+  }
+}

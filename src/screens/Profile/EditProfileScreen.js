@@ -4,6 +4,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { colors } from '../../theme/colors';
 import { CURRENT_USER } from '../../data/mockData';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 const EditProfileScreen = ({ navigation }) => {
     const [name, setName] = useState(CURRENT_USER.name);
@@ -14,6 +15,7 @@ const EditProfileScreen = ({ navigation }) => {
     
     const { theme } = useTheme();
     const colors = theme.colors;
+    const { t } = useTranslation();
 
     const handleSave = () => {
         // Here you would typically update the user data in your backend or global state
@@ -24,8 +26,8 @@ const EditProfileScreen = ({ navigation }) => {
         CURRENT_USER.instagram = instagram;
         CURRENT_USER.whatsapp = whatsapp;
 
-        Alert.alert('Éxito', 'Perfil actualizado correctamente', [
-            { text: 'OK', onPress: () => navigation.goBack() }
+        Alert.alert(t('common.success'), t('editProfile.successMessage'), [
+            { text: t('common.ok'), onPress: () => navigation.goBack() }
         ]);
     };
 
@@ -35,69 +37,70 @@ const EditProfileScreen = ({ navigation }) => {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color={colors.text} />
                 </TouchableOpacity>
-                <Text style={[styles.headerTitle, { color: colors.text }]}>Editar Perfil</Text>
+                <Text style={[styles.headerTitle, { color: colors.text }]}>{t('editProfile.title')}</Text>
                 <TouchableOpacity onPress={handleSave} style={styles.saveButton}>
-                    <Text style={styles.saveButtonText}>Guardar</Text>
+                    <Text style={styles.saveButtonText}>{t('editProfile.save')}</Text>
                 </TouchableOpacity>
             </View>
 
             <ScrollView style={styles.content}>
                 <View style={styles.inputGroup}>
-                    <Text style={[styles.label, { color: colors.textSecondary }]}>Nombre</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>{t('editProfile.nameLabel')}</Text>
                     <TextInput
                         style={[styles.input, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
                         value={name}
                         onChangeText={setName}
-                        placeholder="Tu nombre"
+                        placeholder={t('editProfile.namePlaceholder')}
                         placeholderTextColor={colors.textSecondary}
                     />
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={[styles.label, { color: colors.textSecondary }]}>Edad</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>{t('editProfile.ageLabel')}</Text>
                     <TextInput
                         style={[styles.input, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
                         value={age}
                         onChangeText={setAge}
                         keyboardType="numeric"
-                        placeholder="Tu edad"
+                        placeholder={t('editProfile.agePlaceholder')}
                         placeholderTextColor={colors.textSecondary}
                     />
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={[styles.label, { color: colors.textSecondary }]}>Descripción</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>{t('editProfile.bioLabel')}</Text>
                     <TextInput
                         style={[styles.input, styles.textArea, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
                         value={bio}
                         onChangeText={setBio}
                         multiline
                         numberOfLines={4}
-                        placeholder="Cuéntanos sobre ti..."
+                        placeholder={t('editProfile.bioPlaceholder')}
                         placeholderTextColor={colors.textSecondary}
                         textAlignVertical="top"
                     />
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={[styles.label, { color: colors.textSecondary }]}>Instagram</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>{t('editProfile.instagramLabel')}</Text>
                     <TextInput
                         style={[styles.input, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
                         value={instagram}
                         onChangeText={setInstagram}
-                        placeholder="@usuario"
+                        placeholder={t('editProfile.instagramPlaceholder')}
                         placeholderTextColor={colors.textSecondary}
                     />
                 </View>
 
                 <View style={styles.inputGroup}>
-                    <Text style={[styles.label, { color: colors.textSecondary }]}>WhatsApp</Text>
+                    <Text style={[styles.label, { color: colors.textSecondary }]}>{t('editProfile.whatsappLabel')}</Text>
                     <TextInput
                         style={[styles.input, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
                         value={whatsapp}
                         onChangeText={setWhatsapp}
                         keyboardType="phone-pad"
-                        placeholder="+54 9 11..."
+                        placeholder={t('editProfile.whatsappPlaceholder')}
+
                         placeholderTextColor={colors.textSecondary}
                     />
                 </View>

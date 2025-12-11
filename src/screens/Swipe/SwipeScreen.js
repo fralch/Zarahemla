@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import SwipeCard from './components/SwipeCard';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 import { MATCHES_DATA } from '../../data/mockData';
 
@@ -12,6 +13,7 @@ const SwipeScreen = () => {
     const users = MATCHES_DATA;
     const { theme } = useTheme();
     const colors = theme.colors;
+    const { t } = useTranslation();
     
     const swipeCardRef = useRef(null);
 
@@ -77,13 +79,13 @@ const SwipeScreen = () => {
                         <View style={[styles.emptyStateIcon, { backgroundColor: colors.card }]}>
                             <Ionicons name="people-outline" size={80} color={colors.textSecondary} />
                         </View>
-                        <Text style={[styles.noMoreText, { color: colors.text }]}>No hay más perfiles por ahora</Text>
-                        <Text style={[styles.noMoreSubText, { color: colors.textSecondary }]}>Vuelve más tarde para ver nuevas personas.</Text>
+                        <Text style={[styles.noMoreText, { color: colors.text }]}>{t('swipe.noMoreProfiles')}</Text>
+                        <Text style={[styles.noMoreSubText, { color: colors.textSecondary }]}>{t('swipe.comeBackLater')}</Text>
                         <TouchableOpacity
                             style={[styles.resetButton, { backgroundColor: colors.primary }]}
                             onPress={() => setCurrentIndex(0)}
                         >
-                            <Text style={[styles.resetButtonText, { color: colors.white }]}>Volver a empezar</Text>
+                            <Text style={[styles.resetButtonText, { color: colors.white }]}>{t('swipe.startOver')}</Text>
                         </TouchableOpacity>
                     </View>
                 )}
