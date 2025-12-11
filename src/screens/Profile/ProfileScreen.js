@@ -65,7 +65,9 @@ const ProfileScreen = ({ navigation }) => {
                     style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
                     onPress={toggleLanguage}
                 >
-                    <Text style={[styles.optionText, { color: colors.text }]}>{t('profile.changeLanguage')}</Text>
+                    <Text style={[styles.optionText, { color: colors.text }]}>
+                        {i18n.language === 'es' ? 'Change Language' : 'Cambiar Idioma'}
+                    </Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
                     <Text style={[styles.optionText, { color: colors.error }]}>{t('profile.logout')}</Text>
