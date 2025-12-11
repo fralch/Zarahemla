@@ -4,6 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../theme/ThemeContext';
 import { CURRENT_USER } from '../../data/mockData';
 import { useTranslation } from 'react-i18next';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const ProfileScreen = ({ navigation }) => {
     // Mock user data from simulated data file
@@ -65,6 +66,7 @@ const ProfileScreen = ({ navigation }) => {
                     style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
                     onPress={toggleLanguage}
                 >
+                    <MaterialIcons name="translate" size={24} color={colors.text} style={{ marginRight: 10 }} />
                     <Text style={[styles.optionText, { color: colors.text }]}>
                         {i18n.language === 'es' ? 'Change Language' : 'Cambiar Idioma'}
                     </Text>
@@ -139,6 +141,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         marginBottom: 5,
         borderRadius: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
     },
     optionText: {
         fontSize: 16,
