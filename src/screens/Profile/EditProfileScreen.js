@@ -2,33 +2,39 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { colors } from '../../theme/colors';
-import { CURRENT_USER } from '../../data/mockData';
+import MatchService from '../../services/MatchService';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 
 const EditProfileScreen = ({ navigation }) => {
-    const [name, setName] = useState(CURRENT_USER.name);
-    const [age, setAge] = useState(CURRENT_USER.age.toString());
-    const [bio, setBio] = useState(CURRENT_USER.bio);
-    const [instagram, setInstagram] = useState(CURRENT_USER.instagram);
-    const [whatsapp, setWhatsapp] = useState(CURRENT_USER.whatsapp);
+    const currentUser = MatchService.getCurrentUser() || {};
+    const [name, setName] = useState(currentUser.name || '');
+    const [age, setAge] = useState(currentUser.age ? currentUser.age.toString() : '');
+    const [description, setDescription] = useState(currentUser.description || currentUser.bio || '');
+    const [instagram, setInstagram] = useState(currentUser.instagram || '');
+    const [whatsapp, setWhatsapp] = useState(currentUser.whatsapp || '');
     
     const { theme } = useTheme();
     const colors = theme.colors;
     const { t } = useTranslation();
 
-    const handleSave = () => {
-        // Here you would typically update the user data in your backend or global state
-        // For now, we'll update the mock object directly (works for this session)
-        CURRENT_USER.name = name;
-        CURRENT_USER.age = parseInt(age);
-        CURRENT_USER.bio = bio;
-        CURRENT_USER.instagram = instagram;
-        CURRENT_USER.whatsapp = whatsapp;
+    const handleSave = async () => {
+        try {
+            await MatchService.updateProfile({
+                name,
+                age: parseInt(age) || 0,
+                description,
+                instagram,
+                whatsapp
+            });
 
-        Alert.alert(t('common.success'), t('editProfile.successMessage'), [
-            { text: t('common.ok'), onPress: () => navigation.goBack() }
-        ]);
+            Alert.alert(t('common.success'), t('editProfile.successMessage'), [
+                { text: t('common.ok'), onPress: () => navigation.goBack() }
+            ]);
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Failed to update profile');
+        }
     };
 
     return (
@@ -71,8 +77,8 @@ const EditProfileScreen = ({ navigation }) => {
                     <Text style={[styles.label, { color: colors.textSecondary }]}>{t('editProfile.bioLabel')}</Text>
                     <TextInput
                         style={[styles.input, styles.textArea, { backgroundColor: colors.inputBackground, color: colors.text, borderColor: colors.border }]}
-                        value={bio}
-                        onChangeText={setBio}
+                        value={description}
+                        onChangeText={setDescription}
                         multiline
                         numberOfLines={4}
                         placeholder={t('editProfile.bioPlaceholder')}

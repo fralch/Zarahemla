@@ -16,7 +16,22 @@
     "age": "Age",
     "instagram": "Instagram (User or Link)",
     "whatsapp": "WhatsApp (Optional)",
-    "start": "Get Started"
+    "start": "Get Started",
+    "error": "Registration Error",
+    "errorDesc": "Could not create user. Please try again.",
+    "hasAccount": "Already have an account?",
+    "login": "Login"
+  },
+  "login": {
+    "welcomeBack": "Welcome Back!",
+    "subtitle": "Login to continue",
+    "login": "Login",
+    "noAccount": "Don't have an account?",
+    "register": "Register",
+    "missingData": "Missing data",
+    "missingDataDesc": "Please enter email and password",
+    "error": "Login Error",
+    "errorDesc": "Invalid credentials"
   },
   "matches": {
     "noDescription": "No description",

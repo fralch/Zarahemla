@@ -2,23 +2,43 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../theme/ThemeContext';
-import { CURRENT_USER } from '../../data/mockData';
+import MatchService from '../../services/MatchService';
 import { useTranslation } from 'react-i18next';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const ProfileScreen = ({ navigation }) => {
-    // Mock user data from simulated data file
-    const [user, setUser] = useState(CURRENT_USER);
+    // Get user from Service
+    const [user, setUser] = useState(MatchService.getCurrentUser());
+    const [loading, setLoading] = useState(!user);
     const { theme, toggleTheme, isDark } = useTheme();
     const colors = theme.colors;
     const { t, i18n } = useTranslation();
-
+    
     useFocusEffect(
         useCallback(() => {
-            // Force update user data when screen comes into focus
-            setUser({ ...CURRENT_USER });
+            const loadUser = async () => {
+                setLoading(true);
+                try {
+                    const currentUser = await MatchService.fetchCurrentUser();
+                    setUser(currentUser);
+                } catch (error) {
+                    console.error("Failed to load user", error);
+                    // Optionally show an error alert or state
+                } finally {
+                    setLoading(false);
+                }
+            };
+            loadUser();
         }, [])
     );
+
+    if (loading || !user) {
+        return (
+            <View style={[styles.container, { backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' }]}>
+                <Text style={{ color: colors.text }}>{t('common.loading') || 'Loading...'}</Text>
+            </View>
+        );
+    }
 
     const toggleLanguage = () => {
         const nextLanguage = i18n.language === 'es' ? 'en' : 'es';
@@ -50,19 +70,19 @@ const ProfileScreen = ({ navigation }) => {
 
             <View style={styles.section}>
                 <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('profile.settings')}</Text>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
                     onPress={() => navigation.navigate('EditProfile')}
                 >
                     <Text style={[styles.optionText, { color: colors.text }]}>{t('profile.editInfo')}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
                     onPress={toggleTheme}
                 >
                     <Text style={[styles.optionText, { color: colors.text }]}>{isDark ? t('profile.lightMode') : t('profile.darkMode')}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
                     onPress={toggleLanguage}
                 >

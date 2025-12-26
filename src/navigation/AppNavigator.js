@@ -1,23 +1,24 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import RegisterScreen from '../screens/Register';
+import LoginScreen from '../screens/Login/LoginScreen';
 import SwipeScreen from '../screens/Swipe';
 import MatchesScreen from '../screens/Matches';
 import ProfileScreen from '../screens/Profile';
 import EditProfileScreen from '../screens/Profile/EditProfileScreen';
 import { useTheme } from '../theme/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import MatchService from '../services/MatchService';
 
 import { Ionicons } from '@expo/vector-icons';
-
-// ... imports
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function MainTabs() {
+// ... existing MainTabs code ...
     const { theme } = useTheme();
     const { t } = useTranslation();
     return (
@@ -66,9 +67,33 @@ function MainTabs() {
 
 export default function AppNavigator() {
     const { theme } = useTheme();
+    const [isLoading, setIsLoading] = useState(true);
+    const [initialRoute, setInitialRoute] = useState('Login');
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const user = await MatchService.init();
+                if (user) {
+                    setInitialRoute('MainTabs');
+                }
+            } catch (error) {
+                console.log('Auth check failed', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        checkAuth();
+    }, []);
+
+    if (isLoading) {
+        return null; 
+    }
+
     return (
         <NavigationContainer theme={theme}>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Register" component={RegisterScreen} />
                 <Stack.Screen name="MainTabs" component={MainTabs} />
                 <Stack.Screen name="EditProfile" component={EditProfileScreen} />

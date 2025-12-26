@@ -6,35 +6,58 @@ import SwipeCard from './components/SwipeCard';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 
-import { MATCHES_DATA } from '../../data/mockData';
+import MatchService from '../../services/MatchService';
+import { Alert } from 'react-native'; // Import Alert
 
 const SwipeScreen = () => {
-    // Mock data
-    const users = MATCHES_DATA;
+    const [users, setUsers] = useState([]);
     const { theme } = useTheme();
     const colors = theme.colors;
     const { t } = useTranslation();
-    
-    const swipeCardRef = useRef(null);
 
+    const swipeCardRef = useRef(null);
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    const handleSwipeLeft = () => {
-        // Dislike/Reject
-        console.log('Dislike:', users[currentIndex].name);
-        if (currentIndex < users.length - 1) {
+    // Initial Load
+    React.useEffect(() => {
+        loadCandidates();
+    }, []);
+
+    const loadCandidates = async () => {
+        try {
+            const candidates = await MatchService.getCandidates();
+            setUsers(candidates);
+            setCurrentIndex(0);
+        } catch (error) {
+            console.error('Failed to load candidates:', error);
+        }
+    };
+
+    const handleSwipeLeft = async () => {
+        // Dislike
+        const user = users[currentIndex];
+        await MatchService.swipe(user.id, 'dislike');
+        nextCard();
+    };
+
+    const handleSwipeRight = async () => {
+        // Like
+        const user = users[currentIndex];
+        const result = await MatchService.swipe(user.id, 'like');
+
+        if (result.match) {
+            Alert.alert("It's a Match!", `You matched with ${user.name}`);
+        }
+
+        nextCard();
+    };
+
+    const nextCard = () => {
+        if (currentIndex < users.length) {
             setCurrentIndex(currentIndex + 1);
         }
     };
 
-    const handleSwipeRight = () => {
-        // Like
-        console.log('Like:', users[currentIndex].name);
-        if (currentIndex < users.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-        }
-    };
-    
     const triggerSwipeLeft = () => {
         if (swipeCardRef.current) {
             swipeCardRef.current.swipeLeft();
@@ -83,7 +106,7 @@ const SwipeScreen = () => {
                         <Text style={[styles.noMoreSubText, { color: colors.textSecondary }]}>{t('swipe.comeBackLater')}</Text>
                         <TouchableOpacity
                             style={[styles.resetButton, { backgroundColor: colors.primary }]}
-                            onPress={() => setCurrentIndex(0)}
+                            onPress={loadCandidates}
                         >
                             <Text style={[styles.resetButtonText, { color: colors.white }]}>{t('swipe.startOver')}</Text>
                         </TouchableOpacity>

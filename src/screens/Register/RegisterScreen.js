@@ -12,11 +12,13 @@ import { useTranslation } from 'react-i18next';
 const RegisterScreen = ({ navigation }) => {
     const { t } = useTranslation();
     const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [age, setAge] = useState('');
     const [instagram, setInstagram] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
     const [image, setImage] = useState(null);
-    
+
     const { theme } = useTheme();
     const colors = theme.colors;
 
@@ -34,11 +36,34 @@ const RegisterScreen = ({ navigation }) => {
     };
 
     const handleRegister = () => {
-        if (!name || !age || !instagram || !image) {
+        if (!name || !email || !password || !age || !instagram || !image) {
             Alert.alert(t('register.missingData'), t('register.missingDataDesc'));
             return;
         }
-        navigation.replace('MainTabs');
+
+        // Register with MatchService
+        import('../../services/MatchService').then(async module => {
+            const matchService = module.default;
+            try {
+                await matchService.registerUser({
+                    name,
+                    email,
+                    password,
+                    age: parseInt(age),
+                    instagram,
+                    whatsapp,
+                    image,
+                    // For prototype, default to female seeking male or arbitrary
+                    // ideally add UI for this
+                    gender: 'female',
+                    interested_in: 'male',
+                    description: 'New user' // Default description
+                });
+                navigation.replace('MainTabs');
+            } catch (error) {
+                Alert.alert(t('register.error'), t('register.errorDesc'));
+            }
+        });
     };
 
     return (
@@ -69,6 +94,21 @@ const RegisterScreen = ({ navigation }) => {
                         value={name}
                         onChangeText={setName}
                         icon="person-outline"
+                    />
+                    <RegisterInput
+                        placeholder="Email"
+                        value={email}
+                        onChangeText={setEmail}
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        icon="mail-outline"
+                    />
+                    <RegisterInput
+                        placeholder="Password"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                        icon="lock-closed-outline"
                     />
                     <RegisterInput
                         placeholder={t('register.age')}
@@ -103,6 +143,15 @@ const RegisterScreen = ({ navigation }) => {
                         <Text style={styles.buttonText}>{t('register.start')}</Text>
                         <Ionicons name="arrow-forward" size={24} color="white" style={styles.buttonIcon} />
                     </LinearGradient>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                    style={styles.linkContainer} 
+                    onPress={() => navigation.navigate('Login')}
+                >
+                    <Text style={[styles.linkText, { color: colors.textSecondary }]}>
+                        {t('register.hasAccount')} <Text style={{ color: colors.primary, fontWeight: 'bold' }}>{t('register.login')}</Text>
+                    </Text>
                 </TouchableOpacity>
             </ScrollView>
         </SafeAreaView>
@@ -181,29 +230,34 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         width: '100%',
-        marginTop: 10,
-        shadowColor: colors.primary,
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.4,
+        shadowColor: '#FF5050',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
         shadowRadius: 10,
-        elevation: 10,
+        elevation: 5,
     },
     button: {
-        width: '100%',
-        height: 56,
-        borderRadius: 28,
+        height: 55,
+        borderRadius: 30,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
     },
     buttonText: {
-        color: colors.white,
+        color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
-        marginRight: 8,
+        marginRight: 10,
     },
     buttonIcon: {
-        marginLeft: 4,
+        marginLeft: 5,
+    },
+    linkContainer: {
+        marginTop: 20,
+        marginBottom: 20,
+    },
+    linkText: {
+        fontSize: 16,
     },
 });
 
