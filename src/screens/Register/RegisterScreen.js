@@ -64,7 +64,7 @@ const RegisterScreen = ({ navigation }) => {
             Alert.alert(t('register.error'), t('register.ageRequired'));
             return false;
         }
-        if (!description.trim() || description.trim().length < 10) {
+        if (!description.trim() || description.trim().length < 1) {
             Alert.alert(t('register.error'), t('register.descriptionRequired'));
             return false;
         }
@@ -208,14 +208,17 @@ const RegisterScreen = ({ navigation }) => {
                             <View style={styles.selectorContainer}>
                                 <Text style={[styles.label, { color: colors.textSecondary }]}>{t('register.gender')}</Text>
                                 <View style={styles.selectorOptions}>
-                                    {['male', 'female', 'other'].map((opt) => (
+                                    {['male', 'female'].map((opt) => (
                                         <TouchableOpacity
                                             key={opt}
                                             style={[
                                                 styles.selectorOption,
                                                 gender === opt && { backgroundColor: colors.primary }
                                             ]}
-                                            onPress={() => setGender(opt)}
+                                            onPress={() => {
+                                                setGender(opt);
+                                                setInterestedIn(opt === 'male' ? 'female' : 'male');
+                                            }}
                                         >
                                             <Text style={[
                                                 styles.selectorText,
@@ -231,14 +234,17 @@ const RegisterScreen = ({ navigation }) => {
                             <View style={styles.selectorContainer}>
                                 <Text style={[styles.label, { color: colors.textSecondary }]}>{t('register.interestedIn')}</Text>
                                 <View style={styles.selectorOptions}>
-                                    {['male', 'female', 'other'].map((opt) => (
+                                    {['male', 'female'].map((opt) => (
                                         <TouchableOpacity
                                             key={opt}
                                             style={[
                                                 styles.selectorOption,
                                                 interestedIn === opt && { backgroundColor: colors.primary }
                                             ]}
-                                            onPress={() => setInterestedIn(opt)}
+                                            onPress={() => {
+                                                setInterestedIn(opt);
+                                                setGender(opt === 'male' ? 'female' : 'male');
+                                            }}
                                         >
                                             <Text style={[
                                                 styles.selectorText,
