@@ -258,7 +258,6 @@ const RegisterScreen = ({ navigation }) => {
                                 multiline
                                 numberOfLines={4}
                                 icon="document-text-outline"
-                                style={{ height: 100, textAlignVertical: 'top' }}
                             />
                         </>
                     )}

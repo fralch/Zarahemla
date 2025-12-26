@@ -3,22 +3,32 @@ import { TextInput, StyleSheet, View } from 'react-native';
 import { useTheme } from '../../../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
-const RegisterInput = ({ value, onChangeText, placeholder, icon, ...props }) => {
+const RegisterInput = ({ value, onChangeText, placeholder, icon, style, ...props }) => {
     const { theme } = useTheme();
     const colors = theme.colors;
+    const isMultiline = props.multiline;
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.inputBackground, borderColor: colors.border }]}>
+        <View style={[
+            styles.container, 
+            { backgroundColor: colors.inputBackground, borderColor: colors.border },
+            isMultiline && styles.multilineContainer
+        ]}>
             {icon && (
                 <Ionicons
                     name={icon}
                     size={20}
                     color={colors.textSecondary}
-                    style={styles.icon}
+                    style={[styles.icon, isMultiline && styles.multilineIcon]}
                 />
             )}
             <TextInput
-                style={[styles.input, { color: colors.text }]}
+                style={[
+                    styles.input, 
+                    { color: colors.text },
+                    isMultiline && styles.multilineInput,
+                    style
+                ]}
                 placeholder={placeholder}
                 value={value}
                 onChangeText={onChangeText}
@@ -40,14 +50,27 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         borderWidth: 1,
     },
+    multilineContainer: {
+        height: 'auto',
+        minHeight: 120,
+        alignItems: 'flex-start',
+        paddingVertical: 15,
+    },
     icon: {
         marginRight: 10,
+    },
+    multilineIcon: {
+        marginTop: 5, // Align icon with the first line of text
     },
     input: {
         flex: 1,
         height: '100%',
         fontSize: 16,
     },
+    multilineInput: {
+        textAlignVertical: 'top', // Android specific
+        height: '100%',
+    }
 });
 
 export default RegisterInput;
