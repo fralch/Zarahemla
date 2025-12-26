@@ -39,18 +39,50 @@ const RegisterScreen = ({ navigation }) => {
         }
     };
 
+    const validateStep1 = () => {
+        if (!name.trim()) {
+            Alert.alert(t('register.error'), t('register.nameRequired'));
+            return false;
+        }
+        if (!email.trim()) {
+            Alert.alert(t('register.error'), t('register.emailRequired'));
+            return false;
+        }
+        if (!password || password.length < 6) {
+            Alert.alert(t('register.error'), t('register.passwordRequired'));
+            return false;
+        }
+        if (!image) {
+            Alert.alert(t('register.error'), t('register.photoRequired'));
+            return false;
+        }
+        return true;
+    };
+
+    const validateStep2 = () => {
+        if (!age || parseInt(age) < 18 || parseInt(age) > 99) {
+            Alert.alert(t('register.error'), t('register.ageRequired'));
+            return false;
+        }
+        if (!description.trim() || description.trim().length < 10) {
+            Alert.alert(t('register.error'), t('register.descriptionRequired'));
+            return false;
+        }
+        return true;
+    };
+
+    const validateStep3 = () => {
+        if (!instagram.trim()) {
+            Alert.alert(t('register.error'), t('register.instagramRequired'));
+            return false;
+        }
+        return true;
+    };
+
     const handleNext = () => {
-        if (step === 1) {
-            if (!name || !email || !password || !image) {
-                Alert.alert(t('register.missingData'), t('register.missingDataDesc'));
-                return;
-            }
+        if (step === 1 && validateStep1()) {
             setStep(2);
-        } else if (step === 2) {
-            if (!age || !gender || !interestedIn || !description) {
-                Alert.alert(t('register.missingData'), t('register.missingDataDesc'));
-                return;
-            }
+        } else if (step === 2 && validateStep2()) {
             setStep(3);
         }
     };
@@ -59,47 +91,70 @@ const RegisterScreen = ({ navigation }) => {
         setStep(step - 1);
     };
 
-    const handleRegister = () => {
-        if (!instagram) {
-            Alert.alert(t('register.missingData'), t('register.missingDataDesc'));
+    const handleRegister = async () => {
+        if (!validateStep3()) {
             return;
         }
 
-        // Register with MatchService
-        import('../../services/MatchService').then(async module => {
-            const matchService = module.default;
-            try {
-                await matchService.registerUser({
-                    name,
-                    email,
-                    password,
-                    age: parseInt(age),
-                    instagram,
-                    whatsapp,
-                    image,
-                    // For prototype, default to female seeking male or arbitrary
-                    // ideally add UI for this
-                    gender: 'female',
-                    interested_in: 'male',
-                    description: 'New user' // Default description
-                });
-                navigation.replace('MainTabs');
-            } catch (error) {
-                Alert.alert(t('register.error'), t('register.errorDesc'));
-            }
-        });
+        try {
+            const matchService = await import('../../services/MatchService');
+            await matchService.default.registerUser({
+                name,
+                email,
+                password,
+                age: parseInt(age),
+                instagram,
+                whatsapp: whatsapp || '',
+                image,
+                gender,
+                interested_in: interestedIn,
+                description
+            });
+            navigation.replace('MainTabs');
+        } catch (error) {
+            Alert.alert(t('register.error'), t('register.errorDesc'));
+        }
+    };
+
+    const getStepTitle = () => {
+        switch(step) {
+            case 1: return t('register.step1Title');
+            case 2: return t('register.step2Title');
+            case 3: return t('register.step3Title');
+            default: return '';
+        }
+    };
+
+    const getStepSubtitle = () => {
+        switch(step) {
+            case 1: return t('register.step1Subtitle');
+            case 2: return t('register.step2Subtitle');
+            case 3: return t('register.step3Subtitle');
+            default: return '';
+        }
     };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
             <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+                {/* Progress Indicator */}
+                <View style={styles.progressContainer}>
+                    <View style={styles.progressBar}>
+                        <View style={[styles.progressFill, { width: `${(step / 3) * 100}%`, backgroundColor: colors.primary }]} />
+                    </View>
+                    <Text style={[styles.progressText, { color: colors.textSecondary }]}>
+                        {t('register.step')} {step} {t('register.of')} 3
+                    </Text>
+                </View>
+
                 <View style={styles.header}>
-                    <Text style={[styles.title, { color: colors.text }]}>{t('register.createAccount')}</Text>
-                    <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{t('register.subtitle')}</Text>
+                    <Text style={[styles.title, { color: colors.text }]}>{getStepTitle()}</Text>
+                    <Text style={[styles.subtitle, { color: colors.textSecondary }]}>{getStepSubtitle()}</Text>
                 </View>
 
                 <View style={styles.form}>
-                    {step === 1 ? (
+                    {/* Step 1: Basic Information */}
+                    {step === 1 && (
                         <>
                             <TouchableOpacity onPress={pickImage} style={styles.imageContainer}>
                                 {image ? (
@@ -137,7 +192,10 @@ const RegisterScreen = ({ navigation }) => {
                                 icon="lock-closed-outline"
                             />
                         </>
-                    ) : (
+                    )}
+
+                    {/* Step 2: Personal Profile */}
+                    {step === 2 && (
                         <>
                             <RegisterInput
                                 placeholder={t('register.age')}
@@ -198,10 +256,19 @@ const RegisterScreen = ({ navigation }) => {
                                 value={description}
                                 onChangeText={setDescription}
                                 multiline
-                                numberOfLines={3}
+                                numberOfLines={4}
                                 icon="document-text-outline"
                                 style={{ height: 100, textAlignVertical: 'top' }}
                             />
+                        </>
+                    )}
+
+                    {/* Step 3: Social Media */}
+                    {step === 3 && (
+                        <>
+                            <View style={styles.socialIconContainer}>
+                                <Ionicons name="logo-instagram" size={60} color={colors.primary} />
+                            </View>
 
                             <RegisterInput
                                 placeholder={t('register.instagram')}
@@ -217,6 +284,13 @@ const RegisterScreen = ({ navigation }) => {
                                 keyboardType="phone-pad"
                                 icon="logo-whatsapp"
                             />
+
+                            <View style={styles.infoBox}>
+                                <Ionicons name="information-circle-outline" size={20} color={colors.textSecondary} />
+                                <Text style={[styles.infoText, { color: colors.textSecondary }]}>
+                                    {t('register.socialInfo')}
+                                </Text>
+                            </View>
                         </>
                     )}
                 </View>
@@ -233,6 +307,24 @@ const RegisterScreen = ({ navigation }) => {
                             <Ionicons name="arrow-forward" size={24} color="white" style={styles.buttonIcon} />
                         </LinearGradient>
                     </TouchableOpacity>
+                ) : step === 2 ? (
+                    <View style={styles.buttonsRow}>
+                        <TouchableOpacity style={[styles.backButton]} onPress={handleBack}>
+                            <Ionicons name="arrow-back" size={24} color={colors.textSecondary} />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={[styles.buttonContainer, { flex: 1, marginLeft: 15 }]} onPress={handleNext}>
+                            <LinearGradient
+                                colors={[colors.primary, '#FF7854']}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 0 }}
+                                style={styles.button}
+                            >
+                                <Text style={styles.buttonText}>{t('common.next')}</Text>
+                                <Ionicons name="arrow-forward" size={24} color="white" style={styles.buttonIcon} />
+                            </LinearGradient>
+                        </TouchableOpacity>
+                    </View>
                 ) : (
                     <View style={styles.buttonsRow}>
                         <TouchableOpacity style={[styles.backButton]} onPress={handleBack}>
@@ -247,7 +339,7 @@ const RegisterScreen = ({ navigation }) => {
                                 style={styles.button}
                             >
                                 <Text style={styles.buttonText}>{t('register.start')}</Text>
-                                <Ionicons name="arrow-forward" size={24} color="white" style={styles.buttonIcon} />
+                                <Ionicons name="checkmark-circle" size={24} color="white" style={styles.buttonIcon} />
                             </LinearGradient>
                         </TouchableOpacity>
                     </View>
@@ -272,10 +364,32 @@ const styles = StyleSheet.create({
         padding: 24,
         alignItems: 'center',
     },
+    progressContainer: {
+        width: '100%',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    progressBar: {
+        width: '100%',
+        height: 6,
+        backgroundColor: '#E0E0E0',
+        borderRadius: 10,
+        overflow: 'hidden',
+        marginBottom: 8,
+    },
+    progressFill: {
+        height: '100%',
+        borderRadius: 10,
+        transition: 'width 0.3s ease',
+    },
+    progressText: {
+        fontSize: 13,
+        fontWeight: '600',
+    },
     header: {
         width: '100%',
-        marginTop: 20,
-        marginBottom: 30,
+        marginTop: 10,
+        marginBottom: 25,
         alignItems: 'center',
     },
     title: {
@@ -409,6 +523,27 @@ const styles = StyleSheet.create({
     selectorText: {
         fontWeight: '600',
         fontSize: 14,
+    },
+    socialIconContainer: {
+        width: '100%',
+        alignItems: 'center',
+        marginBottom: 30,
+        marginTop: 10,
+    },
+    infoBox: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F5F5F5',
+        padding: 15,
+        borderRadius: 12,
+        marginTop: 10,
+        width: '100%',
+    },
+    infoText: {
+        flex: 1,
+        fontSize: 13,
+        marginLeft: 10,
+        lineHeight: 18,
     },
 });
 
