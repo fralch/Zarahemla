@@ -14,21 +14,17 @@ const resources = {
 };
 
 const initI18n = async () => {
-  let locale = Localization.getLocales()[0].languageCode;
-
-  // Fallback to Spanish if the device language is not English
-  if (locale !== 'en') {
-    locale = 'es';
-  }
+  // Default to Spanish as requested
+  let locale = 'es';
 
   i18n
     .use(initReactI18next)
     .init({
       resources,
-      lng: locale, // Use device language
-      fallbackLng: 'es', // Default to Spanish if language not found
+      lng: locale, // Start in Spanish
+      fallbackLng: 'es',
       interpolation: {
-        escapeValue: false, // react already safes from xss
+        escapeValue: false,
       },
     });
 };

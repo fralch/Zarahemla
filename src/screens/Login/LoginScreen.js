@@ -9,11 +9,16 @@ import { useTranslation } from 'react-i18next';
 import MatchService from '../../services/MatchService';
 
 const LoginScreen = ({ navigation }) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { theme } = useTheme();
     const colors = theme.colors;
+
+    const toggleLanguage = () => {
+        const nextLanguage = i18n.language === 'es' ? 'en' : 'es';
+        i18n.changeLanguage(nextLanguage);
+    };
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -31,6 +36,14 @@ const LoginScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+            <View style={styles.topContainer}>
+                <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
+                    <Ionicons name="globe-outline" size={22} color={colors.primary} />
+                    <Text style={[styles.languageText, { color: colors.primary }]}>
+                        {i18n.language.toUpperCase()}
+                    </Text>
+                </TouchableOpacity>
+            </View>
             <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                 <View style={styles.header}>
                     <Text style={[styles.title, { color: colors.text }]}>{t('login.welcomeBack')}</Text>
@@ -81,6 +94,24 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    topContainer: {
+        width: '100%',
+        alignItems: 'flex-end',
+        paddingHorizontal: 20,
+        paddingTop: 10,
+    },
+    languageButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 8,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255, 68, 88, 0.1)', // Light primary color
+    },
+    languageText: {
+        marginLeft: 5,
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
     container: {
         flexGrow: 1,
         padding: 24,
