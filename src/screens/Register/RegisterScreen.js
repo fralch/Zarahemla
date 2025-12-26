@@ -16,6 +16,9 @@ const RegisterScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [age, setAge] = useState('');
+    const [gender, setGender] = useState('male');
+    const [interestedIn, setInterestedIn] = useState('female');
+    const [description, setDescription] = useState('');
     const [instagram, setInstagram] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
     const [image, setImage] = useState(null);
@@ -37,19 +40,27 @@ const RegisterScreen = ({ navigation }) => {
     };
 
     const handleNext = () => {
-        if (!name || !email || !password || !image) {
-            Alert.alert(t('register.missingData'), t('register.missingDataDesc'));
-            return;
+        if (step === 1) {
+            if (!name || !email || !password || !image) {
+                Alert.alert(t('register.missingData'), t('register.missingDataDesc'));
+                return;
+            }
+            setStep(2);
+        } else if (step === 2) {
+            if (!age || !gender || !interestedIn || !description) {
+                Alert.alert(t('register.missingData'), t('register.missingDataDesc'));
+                return;
+            }
+            setStep(3);
         }
-        setStep(2);
     };
 
     const handleBack = () => {
-        setStep(1);
+        setStep(step - 1);
     };
 
     const handleRegister = () => {
-        if (!age || !instagram) {
+        if (!instagram) {
             Alert.alert(t('register.missingData'), t('register.missingDataDesc'));
             return;
         }
@@ -135,6 +146,63 @@ const RegisterScreen = ({ navigation }) => {
                                 keyboardType="numeric"
                                 icon="calendar-outline"
                             />
+
+                            <View style={styles.selectorContainer}>
+                                <Text style={[styles.label, { color: colors.textSecondary }]}>{t('register.gender')}</Text>
+                                <View style={styles.selectorOptions}>
+                                    {['male', 'female', 'other'].map((opt) => (
+                                        <TouchableOpacity
+                                            key={opt}
+                                            style={[
+                                                styles.selectorOption,
+                                                gender === opt && { backgroundColor: colors.primary }
+                                            ]}
+                                            onPress={() => setGender(opt)}
+                                        >
+                                            <Text style={[
+                                                styles.selectorText,
+                                                gender === opt ? { color: 'white' } : { color: colors.text }
+                                            ]}>
+                                                {t(`register.${opt}`)}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </View>
+
+                            <View style={styles.selectorContainer}>
+                                <Text style={[styles.label, { color: colors.textSecondary }]}>{t('register.interestedIn')}</Text>
+                                <View style={styles.selectorOptions}>
+                                    {['male', 'female', 'other'].map((opt) => (
+                                        <TouchableOpacity
+                                            key={opt}
+                                            style={[
+                                                styles.selectorOption,
+                                                interestedIn === opt && { backgroundColor: colors.primary }
+                                            ]}
+                                            onPress={() => setInterestedIn(opt)}
+                                        >
+                                            <Text style={[
+                                                styles.selectorText,
+                                                interestedIn === opt ? { color: 'white' } : { color: colors.text }
+                                            ]}>
+                                                {t(`register.${opt}`)}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                            </View>
+
+                            <RegisterInput
+                                placeholder={t('register.descriptionPlaceholder')}
+                                value={description}
+                                onChangeText={setDescription}
+                                multiline
+                                numberOfLines={3}
+                                icon="document-text-outline"
+                                style={{ height: 100, textAlignVertical: 'top' }}
+                            />
+
                             <RegisterInput
                                 placeholder={t('register.instagram')}
                                 value={instagram}
@@ -314,6 +382,33 @@ const styles = StyleSheet.create({
     },
     linkText: {
         fontSize: 16,
+    },
+    selectorContainer: {
+        width: '100%',
+        marginBottom: 15,
+    },
+    label: {
+        fontSize: 14,
+        marginBottom: 8,
+        marginLeft: 4,
+        fontWeight: '600',
+    },
+    selectorOptions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        backgroundColor: '#f0f0f0',
+        borderRadius: 15,
+        padding: 4,
+    },
+    selectorOption: {
+        flex: 1,
+        paddingVertical: 10,
+        alignItems: 'center',
+        borderRadius: 12,
+    },
+    selectorText: {
+        fontWeight: '600',
+        fontSize: 14,
     },
 });
 
