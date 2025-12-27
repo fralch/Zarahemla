@@ -45,6 +45,22 @@ const ProfileScreen = ({ navigation }) => {
         i18n.changeLanguage(nextLanguage);
     };
 
+    const handleLogout = async () => {
+        try {
+            await MatchService.logout();
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }],
+            });
+        } catch (error) {
+            console.error("Logout failed", error);
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }],
+            });
+        }
+    };
+
     return (
         <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
@@ -91,7 +107,10 @@ const ProfileScreen = ({ navigation }) => {
                         {i18n.language === 'es' ? 'Change Language' : 'Cambiar Idioma'}
                     </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
+                <TouchableOpacity 
+                    style={[styles.option, { backgroundColor: colors.card, borderBottomColor: colors.border }]}
+                    onPress={handleLogout}
+                >
                     <Text style={[styles.optionText, { color: colors.error }]}>{t('profile.logout')}</Text>
                 </TouchableOpacity>
             </View>
