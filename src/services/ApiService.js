@@ -1,7 +1,8 @@
 
 import * as SecureStore from 'expo-secure-store';
 
-const BASE_URL = 'https://megaequipamiento.pe/match-api';
+export const BASE_URL = 'https://megaequipamiento.pe/match-api';
+export const IMAGE_BASE_URL = 'https://megaequipamiento.pe';
 const TOKEN_KEY = 'auth_token';
 
 class ApiService {

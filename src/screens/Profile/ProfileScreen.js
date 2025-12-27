@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'rea
 import { useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../theme/ThemeContext';
 import MatchService from '../../services/MatchService';
+import { IMAGE_BASE_URL } from '../../services/ApiService';
 import { useTranslation } from 'react-i18next';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import Loading from '../../components/Loading';
@@ -21,6 +22,8 @@ const ProfileScreen = ({ navigation }) => {
                 setLoading(true);
                 try {
                     const currentUser = await MatchService.fetchCurrentUser();
+                    console.log('User Data:', currentUser);
+                    console.log('User Photos:', currentUser?.photos);
                     setUser(currentUser);
                 } catch (error) {
                     console.error("Failed to load user", error);
@@ -58,15 +61,24 @@ const ProfileScreen = ({ navigation }) => {
         }
     };
 
+    const getProfileImage = (user) => {
+        if (user.photos && user.photos.length > 0) {
+            const photoUrl = user.photos[0].url;
+            if (photoUrl.startsWith('http')) return photoUrl;
+            return `https://megaequipamiento.pe${photoUrl}`;
+        }
+        return user.image || 'https://via.placeholder.com/150';
+    };
+
     return (
         <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
             <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
                 <Image
-                    source={{ uri: user.image }}
+                    source={{ uri: getProfileImage(user) }}
                     style={[styles.avatar, { backgroundColor: colors.primary }]}
                 />
                 <Text style={[styles.name, { color: colors.text }]}>{user.name}, {user.age}</Text>
-                <Text style={[styles.bio, { color: colors.textSecondary }]}>{user.bio}</Text>
+                <Text style={[styles.bio, { color: colors.textSecondary }]}>{user.description || user.bio}</Text>
             </View>
 
             <View style={styles.section}>

@@ -100,11 +100,22 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
         return { opacity };
     });
 
+    const getProfileImage = (user) => {
+        if (user.photos && user.photos.length > 0) {
+            const photoUrl = user.photos[0].url;
+            if (photoUrl.startsWith('http')) return photoUrl;
+            return `${IMAGE_BASE_URL}${photoUrl}`;
+        }
+        return user.image;
+    };
+
+    const imageUrl = getProfileImage(user);
+
     return (
         <GestureDetector gesture={gesture}>
             <Animated.View style={[styles.card, animatedStyle, { backgroundColor: colors.card }]}>
-                {user.image ? (
-                    <Image source={{ uri: user.image }} style={styles.image} resizeMode="cover" />
+                {imageUrl ? (
+                    <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
                 ) : (
                     <View style={[styles.image, { backgroundColor: user.color || colors.primary }]} />
                 )}
@@ -115,7 +126,7 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
                 >
                     <View style={styles.info}>
                         <Text style={styles.name}>{user.name}, {user.age}</Text>
-                        {user.bio && <Text style={styles.bio}>{user.bio}</Text>}
+                        {(user.description || user.bio) && <Text style={styles.bio}>{user.description || user.bio}</Text>}
                     </View>
                 </LinearGradient>
 

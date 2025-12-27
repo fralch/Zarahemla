@@ -80,7 +80,7 @@ class MatchService {
 
     async fetchCurrentUser() {
         try {
-            const user = await apiService.get('/me');
+            const user = await apiService.get('/profile');
             this.currentUser = user;
             return user;
         } catch (error) {
