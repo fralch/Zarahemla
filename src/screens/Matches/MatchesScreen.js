@@ -6,7 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Loading from '../../components/Loading';
 import MatchService from '../../services/MatchService';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 40) / 2; // 20 padding on each side, divided by 2
@@ -44,6 +44,7 @@ const MatchItem = ({ item, colors, t }) => (
 );
 
 const MatchesScreen = () => {
+    const navigation = useNavigation();
     const { theme } = useTheme();
     const colors = theme.colors;
     const { t } = useTranslation();
@@ -85,8 +86,24 @@ const MatchesScreen = () => {
                 contentContainerStyle={styles.list}
                 showsVerticalScrollIndicator={false}
                 ListEmptyComponent={
-                    <View style={{ padding: 40, alignItems: 'center' }}>
-                        <Text style={{ color: colors.textSecondary }}>{t('matches.noMatches') || "No matches yet. Start swiping!"}</Text>
+                    <View style={styles.emptyContainer}>
+                        <View style={[styles.iconContainer, { backgroundColor: theme.dark ? '#333' : '#F0F0F0' }]}>
+                            <Ionicons name="heart-dislike-outline" size={80} color={colors.textSecondary} />
+                        </View>
+                        <Text style={[styles.emptyTitle, { color: colors.text }]}>
+                            {t('matches.noMatchesTitle') || "No Matches Yet"}
+                        </Text>
+                        <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+                            {t('matches.noMatchesSubtitle') || "Start exploring to find people nearby."}
+                        </Text>
+                        <TouchableOpacity
+                            style={[styles.exploreButton, { backgroundColor: colors.primary }]}
+                            onPress={() => navigation.navigate('Swipe')}
+                        >
+                            <Text style={styles.exploreButtonText}>
+                                {t('matches.exploreButton') || "Start Swiping"}
+                            </Text>
+                        </TouchableOpacity>
                     </View>
                 }
             />
@@ -173,6 +190,48 @@ const styles = StyleSheet.create({
     },
     waitButton: {
         // backgroundColor: '#fff',
+    },
+    emptyContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 40,
+        marginTop: 50,
+    },
+    iconContainer: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+    },
+    emptyTitle: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    emptySubtitle: {
+        fontSize: 16,
+        textAlign: 'center',
+        marginBottom: 30,
+        lineHeight: 24,
+    },
+    exploreButton: {
+        paddingHorizontal: 30,
+        paddingVertical: 15,
+        borderRadius: 30,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    exploreButtonText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });
 

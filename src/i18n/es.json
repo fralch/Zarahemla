@@ -61,7 +61,10 @@
   "matches": {
     "noDescription": "Sin descripción",
     "title": "Tus Matches",
-    "subtitle": "Personas que les gustaste"
+    "subtitle": "Personas que les gustaste",
+    "noMatchesTitle": "Aún no tienes matches",
+    "noMatchesSubtitle": "Empieza a explorar para encontrar personas cerca.",
+    "exploreButton": "Empezar a deslizar"
   },
   "profile": {
     "contactInfo": "Información de Contacto",
