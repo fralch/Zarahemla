@@ -5,6 +5,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import MatchService from '../../services/MatchService';
 import { useTranslation } from 'react-i18next';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import Loading from '../../components/Loading';
 
 const ProfileScreen = ({ navigation }) => {
     // Get user from Service
@@ -33,11 +34,7 @@ const ProfileScreen = ({ navigation }) => {
     );
 
     if (loading || !user) {
-        return (
-            <View style={[styles.container, { backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' }]}>
-                <Text style={{ color: colors.text }}>{t('common.loading') || 'Loading...'}</Text>
-            </View>
-        );
+        return <Loading />;
     }
 
     const toggleLanguage = () => {

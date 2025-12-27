@@ -4,6 +4,7 @@ import { useTheme } from '../../theme/ThemeContext';
 import { colors } from '../../theme/colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import Loading from '../../components/Loading';
 import MatchService from '../../services/MatchService';
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -47,20 +48,28 @@ const MatchesScreen = () => {
     const colors = theme.colors;
     const { t } = useTranslation();
     const [matches, setMatches] = React.useState([]);
+    const [loading, setLoading] = React.useState(true);
 
     useFocusEffect(
         React.useCallback(() => {
             const loadMatches = async () => {
+                setLoading(true);
                 try {
                     const data = await MatchService.getMatches();
                     setMatches(data);
                 } catch (error) {
                     console.error('Failed to load matches:', error);
+                } finally {
+                    setLoading(false);
                 }
             };
             loadMatches();
         }, [])
     );
+
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>

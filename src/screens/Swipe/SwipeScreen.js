@@ -5,12 +5,14 @@ import { useTheme } from '../../theme/ThemeContext';
 import SwipeCard from './components/SwipeCard';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import Loading from '../../components/Loading';
 
 import MatchService from '../../services/MatchService';
 import { Alert } from 'react-native'; // Import Alert
 
 const SwipeScreen = () => {
     const [users, setUsers] = useState([]);
+    const [loading, setLoading] = useState(true);
     const { theme } = useTheme();
     const colors = theme.colors;
     const { t } = useTranslation();
@@ -24,12 +26,15 @@ const SwipeScreen = () => {
     }, []);
 
     const loadCandidates = async () => {
+        setLoading(true);
         try {
             const candidates = await MatchService.getCandidates();
             setUsers(candidates);
             setCurrentIndex(0);
         } catch (error) {
             console.error('Failed to load candidates:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -69,6 +74,10 @@ const SwipeScreen = () => {
             swipeCardRef.current.swipeRight();
         }
     };
+
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>

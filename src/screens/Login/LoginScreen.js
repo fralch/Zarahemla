@@ -6,12 +6,14 @@ import RegisterInput from '../Register/components/RegisterInput';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import Loading from '../../components/Loading';
 import MatchService from '../../services/MatchService';
 
 const LoginScreen = ({ navigation }) => {
     const { t, i18n } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
     const { theme } = useTheme();
     const colors = theme.colors;
 
@@ -26,13 +28,20 @@ const LoginScreen = ({ navigation }) => {
             return;
         }
 
+        setLoading(true);
         try {
             await MatchService.loginUser(email, password);
             navigation.replace('MainTabs');
         } catch (error) {
             Alert.alert(t('login.error'), t('login.errorDesc'));
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>

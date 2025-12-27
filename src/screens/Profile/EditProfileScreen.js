@@ -5,9 +5,11 @@ import { colors } from '../../theme/colors';
 import MatchService from '../../services/MatchService';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import Loading from '../../components/Loading';
 
 const EditProfileScreen = ({ navigation }) => {
     const currentUser = MatchService.getCurrentUser() || {};
+    const [loading, setLoading] = useState(false);
     const [name, setName] = useState(currentUser.name || '');
     const [age, setAge] = useState(currentUser.age ? currentUser.age.toString() : '');
     const [description, setDescription] = useState(currentUser.description || currentUser.bio || '');
@@ -19,6 +21,7 @@ const EditProfileScreen = ({ navigation }) => {
     const { t } = useTranslation();
 
     const handleSave = async () => {
+        setLoading(true);
         try {
             await MatchService.updateProfile({
                 name,
@@ -34,8 +37,14 @@ const EditProfileScreen = ({ navigation }) => {
         } catch (error) {
             console.error(error);
             Alert.alert('Error', 'Failed to update profile');
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loading) {
+        return <Loading />;
+    }
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>

@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import MatchService from '../services/MatchService';
 
 import { Ionicons } from '@expo/vector-icons';
+import Loading from '../components/Loading';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -87,7 +88,7 @@ export default function AppNavigator() {
     }, []);
 
     if (isLoading) {
-        return null; 
+        return <Loading />; 
     }
 
     return (

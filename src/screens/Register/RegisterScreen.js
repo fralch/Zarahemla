@@ -8,10 +8,12 @@ import RegisterInput from './components/RegisterInput';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import Loading from '../../components/Loading';
 
 const RegisterScreen = ({ navigation }) => {
     const { t } = useTranslation();
     const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -96,6 +98,7 @@ const RegisterScreen = ({ navigation }) => {
             return;
         }
 
+        setLoading(true);
         try {
             const matchService = await import('../../services/MatchService');
             await matchService.default.registerUser({
@@ -113,8 +116,14 @@ const RegisterScreen = ({ navigation }) => {
             navigation.replace('MainTabs');
         } catch (error) {
             Alert.alert(t('register.error'), t('register.errorDesc'));
+        } finally {
+            setLoading(false);
         }
     };
+
+    if (loading) {
+        return <Loading />;
+    }
 
     const getStepTitle = () => {
         switch(step) {
