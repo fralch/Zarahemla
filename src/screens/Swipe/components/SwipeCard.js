@@ -1,4 +1,4 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
@@ -12,6 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../../theme/ThemeContext';
 import { colors } from '../../../theme/colors';
+import { IMAGE_BASE_URL } from '../../../services/ApiService';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,6 +26,7 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
     const translateY = useSharedValue(0);
     const startX = useSharedValue(0);
     const startY = useSharedValue(0);
+    const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
 
     useImperativeHandle(ref, () => ({
         swipeLeft: () => {
@@ -39,7 +41,39 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
         },
     }));
 
-    const gesture = Gesture.Pan()
+    const getProfileImage = (user) => {
+        if (user.photos && user.photos.length > 0) {
+            // Sort photos by order just in case
+            const sortedPhotos = [...user.photos].sort((a, b) => a.order - b.order);
+            const photo = sortedPhotos[currentPhotoIndex] || sortedPhotos[0];
+            const photoUrl = photo.url;
+            if (photoUrl.startsWith('http')) return photoUrl;
+            return `${IMAGE_BASE_URL}${photoUrl}`;
+        }
+        return user.image;
+    };
+
+    const handleTap = (e) => {
+        if (!user.photos || user.photos.length <= 1) return;
+        
+        const isLeftTap = e.x < width / 2;
+        if (isLeftTap) {
+            if (currentPhotoIndex > 0) {
+                setCurrentPhotoIndex(currentPhotoIndex - 1);
+            }
+        } else {
+            if (currentPhotoIndex < user.photos.length - 1) {
+                setCurrentPhotoIndex(currentPhotoIndex + 1);
+            }
+        }
+    };
+
+    const tapGesture = Gesture.Tap()
+        .onEnd((e) => {
+            runOnJS(handleTap)(e);
+        });
+
+    const panGesture = Gesture.Pan()
         .onStart(() => {
             startX.value = translateX.value;
             startY.value = translateY.value;
@@ -65,6 +99,8 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
                 translateY.value = withSpring(0);
             }
         });
+
+    const composedGesture = Gesture.Race(panGesture, tapGesture);
 
     const animatedStyle = useAnimatedStyle(() => {
         const rotate = interpolate(
@@ -100,25 +136,38 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
         return { opacity };
     });
 
-    const getProfileImage = (user) => {
-        if (user.photos && user.photos.length > 0) {
-            const photoUrl = user.photos[0].url;
-            if (photoUrl.startsWith('http')) return photoUrl;
-            return `${IMAGE_BASE_URL}${photoUrl}`;
-        }
-        return user.image;
-    };
-
     const imageUrl = getProfileImage(user);
 
+    const renderIndicators = () => {
+        if (!user.photos || user.photos.length <= 1) return null;
+        return (
+            <View style={styles.indicatorsContainer}>
+                {user.photos.map((_, index) => (
+                    <View
+                        key={index}
+                        style={[
+                            styles.indicator,
+                            {
+                                backgroundColor: index === currentPhotoIndex ? colors.white : 'rgba(255,255,255,0.5)',
+                                width: index === currentPhotoIndex ? 20 : 8,
+                            }
+                        ]}
+                    />
+                ))}
+            </View>
+        );
+    };
+
     return (
-        <GestureDetector gesture={gesture}>
+        <GestureDetector gesture={composedGesture}>
             <Animated.View style={[styles.card, animatedStyle, { backgroundColor: colors.card }]}>
                 {imageUrl ? (
                     <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
                 ) : (
                     <View style={[styles.image, { backgroundColor: user.color || colors.primary }]} />
                 )}
+
+                {renderIndicators()}
 
                 <LinearGradient
                     colors={['transparent', 'rgba(0,0,0,0.8)']}
@@ -210,6 +259,21 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    },
+    indicatorsContainer: {
+        position: 'absolute',
+        top: 20,
+        left: 0,
+        right: 0,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 5,
+        zIndex: 10,
+    },
+    indicator: {
+        height: 4,
+        borderRadius: 2,
     },
 });
 

@@ -65,7 +65,7 @@ const ProfileScreen = ({ navigation }) => {
         if (user.photos && user.photos.length > 0) {
             const photoUrl = user.photos[0].url;
             if (photoUrl.startsWith('http')) return photoUrl;
-            return `https://megaequipamiento.pe${photoUrl}`;
+            return `${IMAGE_BASE_URL}${photoUrl}`;
         }
         return user.image || 'https://via.placeholder.com/150';
     };
