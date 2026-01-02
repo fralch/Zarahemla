@@ -1,9 +1,9 @@
 import React from 'react';
-import { TextInput, StyleSheet, View } from 'react-native';
+import { TextInput, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useTheme } from '../../../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
-const RegisterInput = ({ value, onChangeText, placeholder, icon, style, containerStyle, ...props }) => {
+const RegisterInput = ({ value, onChangeText, placeholder, icon, rightIcon, onRightIconPress, style, containerStyle, ...props }) => {
     const { theme } = useTheme();
     const colors = theme.colors;
     const isMultiline = props.multiline;
@@ -36,6 +36,15 @@ const RegisterInput = ({ value, onChangeText, placeholder, icon, style, containe
                 placeholderTextColor={colors.textSecondary}
                 {...props}
             />
+            {rightIcon && (
+                <TouchableOpacity onPress={onRightIconPress} style={styles.rightIcon}>
+                    <Ionicons
+                        name={rightIcon}
+                        size={20}
+                        color={colors.textSecondary}
+                    />
+                </TouchableOpacity>
+            )}
         </View>
     );
 };
@@ -59,6 +68,9 @@ const styles = StyleSheet.create({
     },
     icon: {
         marginRight: 10,
+    },
+    rightIcon: {
+        marginLeft: 10,
     },
     multilineIcon: {
         marginTop: 5, // Align icon with the first line of text

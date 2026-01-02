@@ -57,6 +57,7 @@ const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [age, setAge] = useState('');
     const [gender, setGender] = useState('male');
     const [interestedIn, setInterestedIn] = useState('female');
@@ -239,8 +240,10 @@ const RegisterScreen = ({ navigation }) => {
                                 placeholder="Password"
                                 value={password}
                                 onChangeText={setPassword}
-                                secureTextEntry
+                                secureTextEntry={!showPassword}
                                 icon="lock-closed-outline"
+                                rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+                                onRightIconPress={() => setShowPassword(!showPassword)}
                             />
                         </>
                     )}
