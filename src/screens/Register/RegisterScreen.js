@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Image, Modal, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Image, Modal, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { colors } from '../../theme/colors';
@@ -188,7 +188,11 @@ const RegisterScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-            <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+            >
+                <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                 {/* Progress Indicator */}
                 <View style={styles.progressContainer}>
                     <View style={styles.progressBar}>
@@ -437,6 +441,7 @@ const RegisterScreen = ({ navigation }) => {
                     </Text>
                 </TouchableOpacity>
             </ScrollView>
+            </KeyboardAvoidingView>
 
             <Modal
                 visible={showCountryPicker}
