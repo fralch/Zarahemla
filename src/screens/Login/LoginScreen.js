@@ -13,6 +13,7 @@ const LoginScreen = ({ navigation }) => {
     const { t, i18n } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const { theme } = useTheme();
     const colors = theme.colors;
@@ -72,8 +73,10 @@ const LoginScreen = ({ navigation }) => {
                         placeholder="Password"
                         value={password}
                         onChangeText={setPassword}
-                        secureTextEntry
+                        secureTextEntry={!showPassword}
                         icon="lock-closed-outline"
+                        rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
+                        onRightIconPress={() => setShowPassword(!showPassword)}
                     />
                 </View>
 
