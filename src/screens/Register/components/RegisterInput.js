@@ -3,7 +3,7 @@ import { TextInput, StyleSheet, View } from 'react-native';
 import { useTheme } from '../../../theme/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 
-const RegisterInput = ({ value, onChangeText, placeholder, icon, style, ...props }) => {
+const RegisterInput = ({ value, onChangeText, placeholder, icon, style, containerStyle, ...props }) => {
     const { theme } = useTheme();
     const colors = theme.colors;
     const isMultiline = props.multiline;
@@ -12,7 +12,8 @@ const RegisterInput = ({ value, onChangeText, placeholder, icon, style, ...props
         <View style={[
             styles.container, 
             { backgroundColor: colors.inputBackground, borderColor: colors.border },
-            isMultiline && styles.multilineContainer
+            isMultiline && styles.multilineContainer,
+            containerStyle
         ]}>
             {icon && (
                 <Ionicons

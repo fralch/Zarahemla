@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Image, Modal, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { colors } from '../../theme/colors';
@@ -9,6 +9,46 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Loading from '../../components/Loading';
+
+const COUNTRIES = [
+  { code: 'DE', name: 'Alemania', dial_code: '+49', flag: '🇩🇪' },
+  { code: 'AR', name: 'Argentina', dial_code: '+54', flag: '🇦🇷' },
+  { code: 'AU', name: 'Australia', dial_code: '+61', flag: '🇦🇺' },
+  { code: 'BE', name: 'Bélgica', dial_code: '+32', flag: '🇧🇪' },
+  { code: 'BO', name: 'Bolivia', dial_code: '+591', flag: '🇧🇴' },
+  { code: 'BR', name: 'Brasil', dial_code: '+55', flag: '🇧🇷' },
+  { code: 'CA', name: 'Canadá', dial_code: '+1', flag: '🇨🇦' },
+  { code: 'CL', name: 'Chile', dial_code: '+56', flag: '🇨🇱' },
+  { code: 'CN', name: 'China', dial_code: '+86', flag: '🇨🇳' },
+  { code: 'CO', name: 'Colombia', dial_code: '+57', flag: '🇨🇴' },
+  { code: 'KR', name: 'Corea del Sur', dial_code: '+82', flag: '🇰🇷' },
+  { code: 'CR', name: 'Costa Rica', dial_code: '+506', flag: '🇨🇷' },
+  { code: 'CU', name: 'Cuba', dial_code: '+53', flag: '🇨🇺' },
+  { code: 'EC', name: 'Ecuador', dial_code: '+593', flag: '🇪🇨' },
+  { code: 'SV', name: 'El Salvador', dial_code: '+503', flag: '🇸🇻' },
+  { code: 'ES', name: 'España', dial_code: '+34', flag: '🇪🇸' },
+  { code: 'FR', name: 'Francia', dial_code: '+33', flag: '🇫🇷' },
+  { code: 'GT', name: 'Guatemala', dial_code: '+502', flag: '🇬🇹' },
+  { code: 'HN', name: 'Honduras', dial_code: '+504', flag: '🇭🇳' },
+  { code: 'IN', name: 'India', dial_code: '+91', flag: '🇮🇳' },
+  { code: 'IT', name: 'Italia', dial_code: '+39', flag: '🇮🇹' },
+  { code: 'JP', name: 'Japón', dial_code: '+81', flag: '🇯🇵' },
+  { code: 'MX', name: 'México', dial_code: '+52', flag: '🇲🇽' },
+  { code: 'NI', name: 'Nicaragua', dial_code: '+505', flag: '🇳🇮' },
+  { code: 'NZ', name: 'Nueva Zelanda', dial_code: '+64', flag: '🇳🇿' },
+  { code: 'NL', name: 'Países Bajos', dial_code: '+31', flag: '🇳🇱' },
+  { code: 'PA', name: 'Panamá', dial_code: '+507', flag: '🇵🇦' },
+  { code: 'PY', name: 'Paraguay', dial_code: '+595', flag: '🇵🇾' },
+  { code: 'PE', name: 'Perú', dial_code: '+51', flag: '🇵🇪' },
+  { code: 'PT', name: 'Portugal', dial_code: '+351', flag: '🇵🇹' },
+  { code: 'PR', name: 'Puerto Rico', dial_code: '+1', flag: '🇵🇷' },
+  { code: 'GB', name: 'Reino Unido', dial_code: '+44', flag: '🇬🇧' },
+  { code: 'DO', name: 'Rep. Dominicana', dial_code: '+1', flag: '🇩🇴' },
+  { code: 'CH', name: 'Suiza', dial_code: '+41', flag: '🇨🇭' },
+  { code: 'UY', name: 'Uruguay', dial_code: '+598', flag: '🇺🇾' },
+  { code: 'US', name: 'USA', dial_code: '+1', flag: '🇺🇸' },
+  { code: 'VE', name: 'Venezuela', dial_code: '+58', flag: '🇻🇪' },
+];
 
 const RegisterScreen = ({ navigation }) => {
     const { t } = useTranslation();
@@ -23,6 +63,8 @@ const RegisterScreen = ({ navigation }) => {
     const [description, setDescription] = useState('');
     const [instagram, setInstagram] = useState('');
     const [whatsapp, setWhatsapp] = useState('');
+    const [countryCode, setCountryCode] = useState('+52');
+    const [showCountryPicker, setShowCountryPicker] = useState(false);
     const [image, setImage] = useState(null);
 
     const { theme } = useTheme();
@@ -291,13 +333,37 @@ const RegisterScreen = ({ navigation }) => {
                                 autoCapitalize="none"
                                 icon="logo-instagram"
                             />
-                            <RegisterInput
-                                placeholder={t('register.whatsapp')}
-                                value={whatsapp}
-                                onChangeText={setWhatsapp}
-                                keyboardType="phone-pad"
-                                icon="logo-whatsapp"
-                            />
+                            <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%', marginBottom: 15 }}>
+                                <TouchableOpacity
+                                    style={{
+                                        height: 55,
+                                        borderRadius: 15,
+                                        backgroundColor: colors.inputBackground,
+                                        borderWidth: 1,
+                                        borderColor: colors.border,
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        paddingHorizontal: 15,
+                                        marginRight: 10,
+                                        flexDirection: 'row'
+                                    }}
+                                    onPress={() => setShowCountryPicker(true)}
+                                >
+                                    <Text style={{ color: colors.text, fontSize: 16 }}>{countryCode}</Text>
+                                    <Ionicons name="chevron-down" size={16} color={colors.textSecondary} style={{ marginLeft: 5 }} />
+                                </TouchableOpacity>
+
+                                <View style={{ flex: 1 }}>
+                                    <RegisterInput
+                                        placeholder={t('register.whatsapp')}
+                                        value={whatsapp}
+                                        onChangeText={setWhatsapp}
+                                        keyboardType="phone-pad"
+                                        icon="logo-whatsapp"
+                                        containerStyle={{ marginBottom: 0 }}
+                                    />
+                                </View>
+                            </View>
 
                             <View style={styles.infoBox}>
                                 <Ionicons name="information-circle-outline" size={20} color={colors.textSecondary} />
@@ -368,6 +434,42 @@ const RegisterScreen = ({ navigation }) => {
                     </Text>
                 </TouchableOpacity>
             </ScrollView>
+
+            <Modal
+                visible={showCountryPicker}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => setShowCountryPicker(false)}
+            >
+                <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+                    <View style={{ backgroundColor: colors.background, borderTopLeftRadius: 20, borderTopRightRadius: 20, height: '70%' }}>
+                        <View style={{ padding: 15, borderBottomWidth: 1, borderBottomColor: colors.border, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 18, fontWeight: 'bold', color: colors.text }}>Seleccionar País</Text>
+                            <TouchableOpacity onPress={() => setShowCountryPicker(false)}>
+                                <Ionicons name="close" size={24} color={colors.text} />
+                            </TouchableOpacity>
+                        </View>
+                        <FlatList
+                            data={COUNTRIES}
+                            keyExtractor={(item) => item.code}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    style={{ padding: 15, borderBottomWidth: 1, borderBottomColor: colors.border, flexDirection: 'row', alignItems: 'center' }}
+                                    onPress={() => {
+                                        setCountryCode(item.dial_code);
+                                        setShowCountryPicker(false);
+                                    }}
+                                >
+                                    <View>
+                                        <Text style={{ fontSize: 16, color: colors.text, fontWeight: '600' }}>{item.name}</Text>
+                                        <Text style={{ fontSize: 14, color: colors.textSecondary }}>{item.dial_code}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            )}
+                        />
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 };
