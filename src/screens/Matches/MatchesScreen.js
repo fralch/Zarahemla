@@ -7,41 +7,75 @@ import { useTranslation } from 'react-i18next';
 import Loading from '../../components/Loading';
 import MatchService from '../../services/MatchService';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { IMAGE_BASE_URL } from '../../services/ApiService';
 
 const { width } = Dimensions.get('window');
 const COLUMN_WIDTH = (width - 40) / 2; // 20 padding on each side, divided by 2
 
-const MatchItem = ({ item, colors, t }) => (
-    <View style={[styles.itemContainer, { backgroundColor: colors.card }]}>
-        <Image
-            source={{ uri: item.image }}
-            style={styles.image}
-            resizeMode="cover"
-        />
-        <View style={styles.infoContainer}>
-            <Text style={[styles.name, { color: colors.text }]}>{item.name}, {item.age}</Text>
-            <Text style={[styles.bio, { color: colors.textSecondary }]} numberOfLines={2}>{item.bio || t('matches.noDescription')}</Text>
+const MatchItem = ({ item, colors, t, navigation }) => {
+    const user = item.other_profile;
 
-            <View style={styles.actions}>
-                <TouchableOpacity
-                    style={[styles.actionButton, styles.instaButton]}
-                    onPress={() => Linking.openURL(item.instagram)}
-                >
-                    <Ionicons name="logo-instagram" size={20} color="#E1306C" />
-                </TouchableOpacity>
+    const getProfileImage = (userProfile) => {
+        if (userProfile.photo) {
+             const photoUrl = userProfile.photo;
+             if (photoUrl.startsWith('http')) return photoUrl;
+             return `${IMAGE_BASE_URL}${photoUrl}`;
+        }
+        if (userProfile.photos && userProfile.photos.length > 0) {
+            const sortedPhotos = [...userProfile.photos].sort((a, b) => a.order - b.order);
+            const photo = sortedPhotos[0];
+            const photoUrl = photo.url;
+            if (photoUrl.startsWith('http')) return photoUrl;
+            return `${IMAGE_BASE_URL}${photoUrl}`;
+        }
+        return userProfile.image;
+    };
 
-                {item.whatsapp && (
-                    <TouchableOpacity
-                        style={[styles.actionButton, styles.waitButton]}
-                        onPress={() => Linking.openURL(`https://wa.me/${item.whatsapp}`)}
-                    >
-                        <Ionicons name="logo-whatsapp" size={20} color="#25D366" />
-                    </TouchableOpacity>
-                )}
+    const imageUrl = getProfileImage(user);
+
+    return (
+        <TouchableOpacity 
+            style={[styles.itemContainer, { backgroundColor: colors.card }]}
+            onPress={() => navigation.navigate('MatchDetail', { matchId: item.id })}
+        >
+            {imageUrl ? (
+                <Image
+                    source={{ uri: imageUrl }}
+                    style={styles.image}
+                    resizeMode="cover"
+                />
+            ) : (
+                <View style={[styles.image, { backgroundColor: colors.border, alignItems: 'center', justifyContent: 'center' }]}>
+                    <Ionicons name="person" size={40} color={colors.textSecondary} />
+                </View>
+            )}
+            <View style={styles.infoContainer}>
+                <Text style={[styles.name, { color: colors.text }]}>{user.name}, {user.age}</Text>
+                <Text style={[styles.bio, { color: colors.textSecondary }]} numberOfLines={2}>{user.bio || user.description || t('matches.noDescription')}</Text>
+
+                <View style={styles.actions}>
+                    {user.instagram && (
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.instaButton]}
+                            onPress={() => Linking.openURL(user.instagram)}
+                        >
+                            <Ionicons name="logo-instagram" size={20} color="#E1306C" />
+                        </TouchableOpacity>
+                    )}
+
+                    {user.whatsapp && (
+                        <TouchableOpacity
+                            style={[styles.actionButton, styles.waitButton]}
+                            onPress={() => Linking.openURL(`https://wa.me/${user.whatsapp}`)}
+                        >
+                            <Ionicons name="logo-whatsapp" size={20} color="#25D366" />
+                        </TouchableOpacity>
+                    )}
+                </View>
             </View>
-        </View>
-    </View>
-);
+        </TouchableOpacity>
+    );
+};
 
 const MatchesScreen = () => {
     const navigation = useNavigation();
@@ -81,7 +115,7 @@ const MatchesScreen = () => {
             <FlatList
                 data={matches}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <MatchItem item={item} colors={colors} t={t} />}
+                renderItem={({ item }) => <MatchItem item={item} colors={colors} t={t} navigation={navigation} />}
                 numColumns={2}
                 contentContainerStyle={styles.list}
                 showsVerticalScrollIndicator={false}

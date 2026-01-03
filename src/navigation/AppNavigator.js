@@ -6,6 +6,7 @@ import RegisterScreen from '../screens/Register';
 import LoginScreen from '../screens/Login/LoginScreen';
 import SwipeScreen from '../screens/Swipe';
 import MatchesScreen from '../screens/Matches';
+import MatchDetailScreen from '../screens/Matches/MatchDetailScreen';
 import ProfileScreen from '../screens/Profile';
 import EditProfileScreen from '../screens/Profile/EditProfileScreen';
 import { useTheme } from '../theme/ThemeContext';
@@ -97,6 +98,7 @@ export default function AppNavigator() {
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Register" component={RegisterScreen} />
                 <Stack.Screen name="MainTabs" component={MainTabs} />
+                <Stack.Screen name="MatchDetail" component={MatchDetailScreen} />
                 <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             </Stack.Navigator>
         </NavigationContainer>

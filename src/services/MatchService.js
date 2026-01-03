@@ -148,6 +148,15 @@ class MatchService {
         }
     }
 
+    async getMatchProfile(matchId) {
+        try {
+            return await apiService.get(`/matches/${matchId}/profile`);
+        } catch (error) {
+            console.error('Error fetching match profile:', error);
+            throw error;
+        }
+    }
+
     async getMessages(matchId) {
         try {
             return await apiService.get(`/matches/${matchId}/messages`);
