@@ -74,7 +74,7 @@ const EditProfileScreen = ({ navigation }) => {
                 age: parseInt(age) || 0,
                 description,
                 instagram,
-                whatsapp
+                whatsapp: whatsapp ? `${countryCode.replace('+', '')}${whatsapp}` : ''
             });
 
             showAlert(t('common.success'), t('editProfile.successMessage'), 'success', [
