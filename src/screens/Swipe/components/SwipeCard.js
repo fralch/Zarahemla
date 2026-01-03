@@ -10,6 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../../theme/ThemeContext';
 import { colors } from '../../../theme/colors';
 import { IMAGE_BASE_URL } from '../../../services/ApiService';
@@ -20,8 +21,9 @@ const SWIPE_THRESHOLD = width * 0.3;
 
 const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
     const { theme } = useTheme();
-    const colors = theme.colors;
-
+    const insets = useSafeAreaInsets();
+    // We stick to the requested palette, overriding theme where necessary for the specific look
+    
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
     const startX = useSharedValue(0);
@@ -43,7 +45,6 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
 
     const getProfileImage = (user) => {
         if (user.photos && user.photos.length > 0) {
-            // Sort photos by order just in case
             const sortedPhotos = [...user.photos].sort((a, b) => a.order - b.order);
             const photo = sortedPhotos[currentPhotoIndex] || sortedPhotos[0];
             const photoUrl = photo.url;
@@ -84,17 +85,14 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
         })
         .onEnd((event) => {
             if (event.translationX > SWIPE_THRESHOLD) {
-                // Swipe Right (Like)
                 translateX.value = withSpring(width * 1.5, {}, () => {
                     runOnJS(onSwipeRight)();
                 });
             } else if (event.translationX < -SWIPE_THRESHOLD) {
-                // Swipe Left (Dislike)
                 translateX.value = withSpring(-width * 1.5, {}, () => {
                     runOnJS(onSwipeLeft)();
                 });
             } else {
-                // Return to center
                 translateX.value = withSpring(0);
                 translateY.value = withSpring(0);
             }
@@ -106,7 +104,7 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
         const rotate = interpolate(
             translateX.value,
             [-width / 2, 0, width / 2],
-            [-15, 0, 15]
+            [-10, 0, 10]
         );
 
         return {
@@ -141,15 +139,15 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
     const renderIndicators = () => {
         if (!user.photos || user.photos.length <= 1) return null;
         return (
-            <View style={styles.indicatorsContainer}>
+            <View style={[styles.indicatorsContainer, { top: insets.top + 20 }]}>
                 {user.photos.map((_, index) => (
                     <View
                         key={index}
                         style={[
                             styles.indicator,
                             {
-                                backgroundColor: index === currentPhotoIndex ? colors.white : 'rgba(255,255,255,0.5)',
-                                width: index === currentPhotoIndex ? 20 : 8,
+                                backgroundColor: index === currentPhotoIndex ? '#FFFFFF' : 'rgba(255, 255, 255, 0.3)',
+                                width: index === currentPhotoIndex ? 20 : 6,
                             }
                         ]}
                     />
@@ -160,31 +158,43 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
 
     return (
         <GestureDetector gesture={composedGesture}>
-            <Animated.View style={[styles.card, animatedStyle, { backgroundColor: colors.card }]}>
+            <Animated.View style={[styles.card, animatedStyle]}>
                 {imageUrl ? (
                     <Image source={{ uri: imageUrl }} style={styles.image} resizeMode="cover" />
                 ) : (
-                    <View style={[styles.image, { backgroundColor: user.color || colors.primary }]} />
+                    <View style={[styles.image, { backgroundColor: user.color || '#333' }]} />
                 )}
 
-                {renderIndicators()}
-
                 <LinearGradient
-                    colors={['transparent', 'rgba(0,0,0,0.8)']}
+                    colors={["transparent", "rgba(0,0,0,0.2)", "rgba(0,0,0,0.6)", "rgba(0,0,0,0.9)"]}
                     style={styles.gradient}
                 >
-                    <View style={styles.info}>
-                        <Text style={styles.name}>{user.name}, {user.age}</Text>
-                        {(user.description || user.bio) && <Text style={styles.bio}>{user.description || user.bio}</Text>}
+                    <View style={styles.contentContainer}>
+                        <View style={styles.textContainer}>
+                            <Text style={styles.name}>{user.name}, {user.age}</Text>
+                            {/* Mocking Gender Tag if not present, or using a generic tag style */}
+                            {user.gender && (
+                                <View style={styles.tagContainer}>
+                                    <Text style={styles.tagText}>{user.gender}</Text>
+                                </View>
+                            )}
+                            {(user.description || user.bio) && (
+                                <Text style={styles.bio} numberOfLines={3}>
+                                    {user.description || user.bio}
+                                </Text>
+                            )}
+                        </View>
                     </View>
                 </LinearGradient>
 
+                {renderIndicators()}
+
                 {/* Like/Nope labels */}
-                <Animated.View style={[styles.likeLabel, { borderColor: colors.success }, likeOpacity]}>
-                    <Ionicons name="heart" size={80} color={colors.success} />
+                <Animated.View style={[styles.likeLabel, likeOpacity]}>
+                    <Text style={styles.likeText}>LIKE</Text>
                 </Animated.View>
-                <Animated.View style={[styles.nopeLabel, { borderColor: colors.error }, nopeOpacity]}>
-                    <Ionicons name="close" size={80} color={colors.error} />
+                <Animated.View style={[styles.nopeLabel, nopeOpacity]}>
+                    <Text style={styles.nopeText}>NOPE</Text>
                 </Animated.View>
             </Animated.View>
         </GestureDetector>
@@ -193,17 +203,12 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
 
 const styles = StyleSheet.create({
     card: {
-        width: width * 0.9,
-        height: height * 0.75, // Taller card
-        backgroundColor: colors.white,
-        borderRadius: 20,
-        overflow: 'hidden',
-        elevation: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-        position: 'relative',
+        width: width,
+        height: height,
+        backgroundColor: '#000',
+        position: 'absolute',
+        top: 0,
+        left: 0,
     },
     image: {
         width: '100%',
@@ -214,66 +219,93 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        height: '40%', // Cover bottom 40% with gradient
+        height: '50%',
         justifyContent: 'flex-end',
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingBottom: 120, // Space for buttons
     },
-    info: {
-        marginBottom: 20,
+    contentContainer: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+    },
+    textContainer: {
+        width: '100%',
     },
     name: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: colors.white,
-        textShadowColor: 'rgba(0, 0, 0, 0.75)',
-        textShadowOffset: { width: -1, height: 1 },
-        textShadowRadius: 10,
+        fontSize: 28,
+        fontWeight: '700',
+        color: '#FFFFFF',
+        letterSpacing: 0.5,
+        marginBottom: 8,
+        textShadowColor: 'rgba(0,0,0,0.5)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 4,
+    },
+    tagContainer: {
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 8,
+        alignSelf: 'flex-start',
+        marginBottom: 8,
+    },
+    tagText: {
+        fontSize: 12,
+        fontWeight: '500',
+        color: 'rgba(255,255,255,0.9)',
     },
     bio: {
-        fontSize: 18,
-        color: colors.white,
-        marginTop: 5,
-        fontWeight: '500',
-        textShadowColor: 'rgba(0, 0, 0, 0.75)',
-        textShadowOffset: { width: -1, height: 1 },
-        textShadowRadius: 10,
-    },
-    likeLabel: {
-        position: 'absolute',
-        top: 50,
-        left: 40,
-        transform: [{ rotate: '-20deg' }],
-        borderWidth: 4,
-        borderColor: '#4CAF50',
-        borderRadius: 10,
-        padding: 10,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)', // Semi-transparent bg
-    },
-    nopeLabel: {
-        position: 'absolute',
-        top: 50,
-        right: 40,
-        transform: [{ rotate: '20deg' }],
-        borderWidth: 4,
-        borderColor: colors.error,
-        borderRadius: 10,
-        padding: 10,
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        fontSize: 15,
+        fontWeight: '400',
+        color: 'rgba(255,255,255,0.8)',
+        lineHeight: 22,
     },
     indicatorsContainer: {
         position: 'absolute',
-        top: 20,
-        left: 0,
-        right: 0,
+        right: 20,
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 5,
+        gap: 6,
         zIndex: 10,
     },
     indicator: {
         height: 4,
         borderRadius: 2,
+    },
+    likeLabel: {
+        position: 'absolute',
+        top: 100,
+        left: 40,
+        transform: [{ rotate: '-30deg' }],
+        borderWidth: 4,
+        borderColor: '#4CAF50',
+        borderRadius: 12,
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+        backgroundColor: 'rgba(0,0,0,0.2)',
+    },
+    likeText: {
+        fontSize: 32,
+        fontWeight: '800',
+        color: '#4CAF50',
+        letterSpacing: 2,
+    },
+    nopeLabel: {
+        position: 'absolute',
+        top: 100,
+        right: 40,
+        transform: [{ rotate: '30deg' }],
+        borderWidth: 4,
+        borderColor: '#F44336',
+        borderRadius: 12,
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+        backgroundColor: 'rgba(0,0,0,0.2)',
+    },
+    nopeText: {
+        fontSize: 32,
+        fontWeight: '800',
+        color: '#F44336',
+        letterSpacing: 2,
     },
 });
 

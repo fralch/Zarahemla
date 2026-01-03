@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import SwipeCard from './components/SwipeCard';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +16,7 @@ const SwipeScreen = () => {
     const { theme } = useTheme();
     const colors = theme.colors;
     const { t } = useTranslation();
+    const insets = useSafeAreaInsets();
 
     const swipeCardRef = useRef(null);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -80,99 +81,112 @@ const SwipeScreen = () => {
     }
 
     return (
-        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
-            <View style={styles.cardContainer}>
-                {currentIndex < users.length ? (
-                    <>
-                        <SwipeCard
-                            ref={swipeCardRef}
-                            key={users[currentIndex].id}
-                            user={users[currentIndex]}
-                            onSwipeLeft={handleSwipeLeft}
-                            onSwipeRight={handleSwipeRight}
-                        />
-                        <View style={styles.buttonsContainer}>
-                            <TouchableOpacity
-                                style={[styles.button, styles.rejectButton, { backgroundColor: colors.card }]}
-                                onPress={triggerSwipeLeft}
-                            >
-                                <Ionicons name="close" size={30} color={colors.error} />
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[styles.button, styles.likeButton, { backgroundColor: colors.primary }]}
-                                onPress={triggerSwipeRight}
-                            >
-                                <Ionicons name="heart" size={30} color={colors.white} />
-                            </TouchableOpacity>
-                        </View>
-                    </>
-                ) : (
-                    <View style={styles.noMoreCards}>
-                        <View style={[styles.emptyStateIcon, { backgroundColor: colors.card }]}>
-                            <Ionicons name="people-outline" size={80} color={colors.textSecondary} />
-                        </View>
-                        <Text style={[styles.noMoreText, { color: colors.text }]}>{t('swipe.noMoreProfiles')}</Text>
-                        <Text style={[styles.noMoreSubText, { color: colors.textSecondary }]}>{t('swipe.comeBackLater')}</Text>
+        <View style={styles.container}>
+            {currentIndex < users.length ? (
+                <>
+                    <SwipeCard
+                        ref={swipeCardRef}
+                        key={users[currentIndex].id}
+                        user={users[currentIndex]}
+                        onSwipeLeft={handleSwipeLeft}
+                        onSwipeRight={handleSwipeRight}
+                    />
+
+                    {/* Back Button (Floating Top Left) */}
+                    <TouchableOpacity 
+                        style={[styles.backButton, { top: insets.top + 10 }]}
+                        onPress={() => {
+                            // Add navigation logic if needed, e.g., navigation.goBack()
+                            // For now, it might be a profile view or settings
+                            console.log('Back pressed');
+                        }}
+                    >
+                        <Ionicons name="arrow-back" size={24} color="#FFF" />
+                    </TouchableOpacity>
+
+                    {/* Action Buttons (Floating Bottom) */}
+                    <View style={[styles.buttonsContainer, { bottom: 40 }]}>
                         <TouchableOpacity
-                            style={[styles.resetButton, { backgroundColor: colors.primary }]}
-                            onPress={loadCandidates}
+                            style={[styles.button, styles.rejectButton]}
+                            onPress={triggerSwipeLeft}
                         >
-                            <Text style={[styles.resetButtonText, { color: colors.white }]}>{t('swipe.startOver')}</Text>
+                            <Ionicons name="close" size={30} color="#FF5E78" />
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity
+                            style={[styles.button, styles.likeButton]}
+                            onPress={triggerSwipeRight}
+                        >
+                            <Ionicons name="heart" size={30} color="#4CAF50" />
                         </TouchableOpacity>
                     </View>
-                )}
-            </View>
-        </SafeAreaView>
+                </>
+            ) : (
+                <View style={styles.noMoreCards}>
+                    <View style={[styles.emptyStateIcon, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
+                        <Ionicons name="people-outline" size={80} color="rgba(255,255,255,0.5)" />
+                    </View>
+                    <Text style={[styles.noMoreText, { color: '#FFF' }]}>{t('swipe.noMoreProfiles')}</Text>
+                    <Text style={[styles.noMoreSubText, { color: 'rgba(255,255,255,0.7)' }]}>{t('swipe.comeBackLater')}</Text>
+                    <TouchableOpacity
+                        style={[styles.resetButton, { backgroundColor: '#FFF' }]}
+                        onPress={loadCandidates}
+                    >
+                        <Text style={[styles.resetButtonText, { color: '#000' }]}>{t('swipe.startOver')}</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: '#000', // Fallback background
     },
-    cardContainer: {
-        flex: 1,
+    // No cardContainer needed as card is absolute full screen
+    backButton: {
+        position: 'absolute',
+        left: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        backgroundColor: 'rgba(0,0,0,0.3)', // Semi-transparent dark
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%',
+        zIndex: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.1)',
     },
     buttonsContainer: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
         flexDirection: 'row',
-        justifyContent: 'space-evenly', // Better spacing
+        justifyContent: 'space-evenly',
         alignItems: 'center',
-        marginTop: 30, // More space from card
-        width: '80%',
+        zIndex: 20,
     },
     button: {
         width: 64,
         height: 64,
-        borderRadius: 32,
+        borderRadius: 32, // Pill shape / Circle
         alignItems: 'center',
         justifyContent: 'center',
-        elevation: 5,
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
+        backgroundColor: 'rgba(255, 255, 255, 0.1)', // Glassmorphism
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.15)',
+        // No elevation for flat look
     },
     rejectButton: {
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-
-        elevation: 8,
+        // Additional styling if needed
     },
     likeButton: {
-        // backgroundColor: colors.primary, // override dynamically
-        shadowColor: '#FF5E78',
-        shadowOpacity: 0.4,
+        // Additional styling if needed
     },
     noMoreCards: {
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         padding: 40,
@@ -184,7 +198,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 30,
-        elevation: 2,
     },
     noMoreText: {
         fontSize: 24,
@@ -202,7 +215,6 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         paddingHorizontal: 40,
         borderRadius: 30,
-        elevation: 3,
     },
     resetButtonText: {
         fontSize: 18,
