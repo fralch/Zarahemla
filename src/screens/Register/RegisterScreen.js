@@ -173,7 +173,7 @@ const RegisterScreen = ({ navigation }) => {
                 password,
                 age: parseInt(age),
                 instagram,
-                whatsapp: whatsapp || '',
+                whatsapp: whatsapp ? `${countryCode.replace('+', '')}${whatsapp}` : '',
                 image,
                 gender,
                 interested_in: interestedIn,
