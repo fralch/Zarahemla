@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Dimensions, TouchableOpacity, Linking, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Dimensions, TouchableOpacity, Linking, StatusBar, Platform } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../theme/ThemeContext';
 import MatchService from '../../services/MatchService';
 import Loading from '../../components/Loading';
 import { IMAGE_BASE_URL } from '../../services/ApiService';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const MatchDetailScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const { matchId } = route.params;
     const { theme } = useTheme();
-    const colors = theme.colors;
+    const insets = useSafeAreaInsets();
     const { t } = useTranslation();
 
     const [profile, setProfile] = useState(null);
@@ -61,76 +63,87 @@ const MatchDetailScreen = () => {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Photos Carousel */}
-                <View style={styles.carouselContainer}>
-                    <ScrollView
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        onScroll={handleScroll}
-                        scrollEventThrottle={16}
-                    >
-                        {photos.length > 0 ? (
-                            photos.map((photo, index) => (
-                                <Image
-                                    key={photo.id || index}
-                                    source={{ uri: getImageUrl(photo) }}
-                                    style={styles.image}
-                                    resizeMode="cover"
-                                />
-                            ))
-                        ) : (
-                             <View style={[styles.image, { backgroundColor: colors.border, alignItems: 'center', justifyContent: 'center' }]}>
-                                <Ionicons name="person" size={100} color={colors.textSecondary} />
-                            </View>
-                        )}
-                    </ScrollView>
-                    
-                    {/* Pagination Dots */}
-                    {photos.length > 1 && (
-                        <View style={styles.pagination}>
-                            {photos.map((_, index) => (
-                                <View
-                                    key={index}
-                                    style={[
-                                        styles.dot,
-                                        { backgroundColor: index === activeSlide ? colors.white : 'rgba(255, 255, 255, 0.5)' }
-                                    ]}
-                                />
-                            ))}
+        <View style={styles.container}>
+            <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+            
+            {/* Full Screen Carousel */}
+            <View style={styles.carouselContainer}>
+                <ScrollView
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
+                    bounces={false}
+                >
+                    {photos.length > 0 ? (
+                        photos.map((photo, index) => (
+                            <Image
+                                key={photo.id || index}
+                                source={{ uri: getImageUrl(photo) }}
+                                style={styles.image}
+                                resizeMode="cover"
+                            />
+                        ))
+                    ) : (
+                         <View style={[styles.image, { backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' }]}>
+                            <Ionicons name="person" size={100} color="#666" />
                         </View>
                     )}
+                </ScrollView>
+                
+                {/* Pagination Dots */}
+                {photos.length > 1 && (
+                    <View style={[styles.pagination, { top: insets.top + 60 }]}>
+                        {photos.map((_, index) => (
+                            <View
+                                key={index}
+                                style={[
+                                    styles.dot,
+                                    { backgroundColor: index === activeSlide ? '#FFF' : 'rgba(255, 255, 255, 0.4)' },
+                                    index === activeSlide && styles.activeDot
+                                ]}
+                            />
+                        ))}
+                    </View>
+                )}
+            </View>
 
-                    {/* Back Button */}
-                    <TouchableOpacity 
-                        style={styles.backButton} 
-                        onPress={() => navigation.goBack()}
-                    >
-                        <Ionicons name="arrow-back" size={24} color="white" />
-                    </TouchableOpacity>
-                </View>
+            {/* Content Overlay */}
+            <LinearGradient
+                colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.6)', 'rgba(0,0,0,0.9)']}
+                locations={[0, 0.3, 0.6, 1]}
+                style={styles.gradientOverlay}
+                pointerEvents="none"
+            />
 
-                {/* Info Section */}
-                <View style={styles.infoContainer}>
-                    <View style={styles.headerRow}>
-                        <Text style={[styles.name, { color: colors.text }]}>
-                            {profile.name}, {profile.age}
-                        </Text>
-                        {profile.gender && (
-                             <View style={[styles.genderTag, { borderColor: colors.border }]}>
-                                <Ionicons 
-                                    name={profile.gender === 'male' ? 'male' : 'female'} 
-                                    size={16} 
-                                    color={colors.textSecondary} 
-                                />
-                            </View>
-                        )}
+            <View style={[styles.contentContainer, { paddingBottom: insets.bottom + 20 }]}>
+                <ScrollView 
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContent}
+                >
+                    <View style={styles.headerInfo}>
+                        <View style={styles.nameRow}>
+                            <Text style={styles.name}>
+                                {profile.name}, {profile.age}
+                            </Text>
+                            {profile.gender && (
+                                <View style={styles.genderTag}>
+                                    <Ionicons 
+                                        name={profile.gender === 'male' ? 'male' : 'female'} 
+                                        size={14} 
+                                        color="#FFF" 
+                                    />
+                                    <Text style={styles.genderText}>
+                                        {profile.gender === 'male' ? t('male') : t('female')}
+                                    </Text>
+                                </View>
+                            )}
+                        </View>
                     </View>
 
                     {profile.description && (
-                        <Text style={[styles.bio, { color: colors.textSecondary }]}>
+                        <Text style={styles.bio}>
                             {profile.description}
                         </Text>
                     )}
@@ -139,28 +152,44 @@ const MatchDetailScreen = () => {
                     <View style={styles.actionsContainer}>
                         {profile.instagram && (
                             <TouchableOpacity
-                                style={[styles.actionButton, styles.instaButton]}
+                                style={styles.actionButton}
                                 onPress={() => Linking.openURL(`https://instagram.com/${profile.instagram.replace('@', '')}`)}
                             >
-                                <Ionicons name="logo-instagram" size={24} color="#E1306C" />
-                                <Text style={styles.actionText}>Instagram</Text>
+                                <LinearGradient
+                                    colors={['rgba(131, 58, 180, 0.9)', 'rgba(253, 29, 29, 0.9)', 'rgba(252, 176, 69, 0.9)']}
+                                    start={{x: 0, y: 0}}
+                                    end={{x: 1, y: 1}}
+                                    style={styles.socialGradient}
+                                >
+                                    <Ionicons name="logo-instagram" size={24} color="#FFF" />
+                                    <Text style={styles.actionText}>Instagram</Text>
+                                </LinearGradient>
                             </TouchableOpacity>
                         )}
 
                         {profile.whatsapp && (
                             <TouchableOpacity
-                                style={[styles.actionButton, styles.whatsappButton]}
+                                style={styles.actionButton}
                                 onPress={() => Linking.openURL(`https://wa.me/${profile.whatsapp.replace('+', '')}`)}
                             >
-                                <Ionicons name="logo-whatsapp" size={24} color="#25D366" />
-                                <Text style={styles.actionText}>WhatsApp</Text>
+                                <View style={[styles.socialGradient, { backgroundColor: 'rgba(37, 211, 102, 0.9)' }]}>
+                                    <Ionicons name="logo-whatsapp" size={24} color="#FFF" />
+                                    <Text style={styles.actionText}>WhatsApp</Text>
+                                </View>
                             </TouchableOpacity>
                         )}
                     </View>
-                    
-                    {/* Other Details can go here */}
-                </View>
-            </ScrollView>
+                </ScrollView>
+            </View>
+
+            {/* Back Button */}
+            <TouchableOpacity 
+                style={[styles.backButton, { top: insets.top + 10 }]} 
+                onPress={() => navigation.goBack()}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+                <Ionicons name="chevron-back" size={28} color="white" />
+            </TouchableOpacity>
         </View>
     );
 };
@@ -168,60 +197,108 @@ const MatchDetailScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#000',
     },
     carouselContainer: {
-        height: 450,
-        position: 'relative',
+        width: width,
+        height: height,
+        position: 'absolute',
+        top: 0,
+        left: 0,
     },
     image: {
         width: width,
-        height: 450,
+        height: height,
+    },
+    gradientOverlay: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: height * 0.6,
     },
     pagination: {
         position: 'absolute',
-        bottom: 20,
+        right: 20,
         flexDirection: 'row',
-        alignSelf: 'center',
+        alignItems: 'center',
     },
     dot: {
+        width: 6,
+        height: 6,
+        borderRadius: 3,
+        marginHorizontal: 4,
+    },
+    activeDot: {
         width: 8,
         height: 8,
-        borderRadius: 4,
-        marginHorizontal: 4,
+        transform: [{ scale: 1.2 }],
     },
     backButton: {
         position: 'absolute',
-        top: 50,
         left: 20,
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         backgroundColor: 'rgba(0,0,0,0.3)',
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.2)',
+        zIndex: 10,
     },
-    infoContainer: {
-        padding: 20,
+    contentContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        maxHeight: height * 0.5,
+        paddingHorizontal: 20,
     },
-    headerRow: {
+    scrollContent: {
+        paddingBottom: 20,
+    },
+    headerInfo: {
+        marginBottom: 12,
+    },
+    nameRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 10,
+        flexWrap: 'wrap',
+        gap: 10,
     },
     name: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        marginRight: 10,
+        fontSize: 34,
+        fontWeight: '800',
+        color: '#FFF',
+        textShadowColor: 'rgba(0, 0, 0, 0.5)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 4,
     },
     genderTag: {
-        padding: 4,
-        borderRadius: 4,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        paddingVertical: 4,
+        paddingHorizontal: 10,
+        borderRadius: 20,
         borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.3)',
+    },
+    genderText: {
+        color: '#FFF',
+        fontSize: 14,
+        fontWeight: '600',
+        marginLeft: 4,
     },
     bio: {
         fontSize: 16,
         lineHeight: 24,
-        marginBottom: 30,
+        color: 'rgba(255,255,255,0.9)',
+        marginBottom: 24,
+        textShadowColor: 'rgba(0, 0, 0, 0.5)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 2,
     },
     actionsContainer: {
         flexDirection: 'row',
@@ -229,27 +306,29 @@ const styles = StyleSheet.create({
     },
     actionButton: {
         flex: 1,
+        borderRadius: 16,
+        overflow: 'hidden',
+        height: 52,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 4.65,
+        elevation: 8,
+    },
+    socialGradient: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingVertical: 12,
-        borderRadius: 12,
         gap: 8,
-        borderWidth: 1,
-        borderColor: '#E0E0E0',
-    },
-    instaButton: {
-        backgroundColor: '#FFF0F5',
-        borderColor: '#FFC0CB',
-    },
-    whatsappButton: {
-        backgroundColor: '#F0FFF4',
-        borderColor: '#90EE90',
     },
     actionText: {
         fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
+        fontWeight: '700',
+        color: '#FFF',
     }
 });
 
