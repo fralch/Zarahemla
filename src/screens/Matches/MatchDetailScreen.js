@@ -216,7 +216,8 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 20,
         flexDirection: 'row',
-        alignItems: 'center',
+        gap: 6,
+        zIndex: 10,
     },
     dot: {
         width: 4,

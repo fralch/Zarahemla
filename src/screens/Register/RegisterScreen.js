@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Image, Modal, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Modal, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import { colors } from '../../theme/colors';
@@ -9,6 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Loading from '../../components/Loading';
+import CustomAlert from '../../components/CustomAlert';
 
 const COUNTRIES = [
   { code: 'DE', name: 'Alemania', dial_code: '+49', flag: '🇩🇪' },
@@ -71,6 +72,28 @@ const RegisterScreen = ({ navigation }) => {
     const { theme } = useTheme();
     const colors = theme.colors;
 
+    const [alertConfig, setAlertConfig] = useState({
+        visible: false,
+        title: '',
+        message: '',
+        type: 'info',
+        buttons: []
+    });
+
+    const showAlert = (title, message, type = 'info', buttons = []) => {
+        setAlertConfig({
+            visible: true,
+            title,
+            message,
+            type,
+            buttons
+        });
+    };
+
+    const hideAlert = () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+    };
+
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -86,19 +109,19 @@ const RegisterScreen = ({ navigation }) => {
 
     const validateStep1 = () => {
         if (!name.trim()) {
-            Alert.alert(t('register.error'), t('register.nameRequired'));
+            showAlert(t('register.error'), t('register.nameRequired'), 'warning');
             return false;
         }
         if (!email.trim()) {
-            Alert.alert(t('register.error'), t('register.emailRequired'));
+            showAlert(t('register.error'), t('register.emailRequired'), 'warning');
             return false;
         }
         if (!password || password.length < 6) {
-            Alert.alert(t('register.error'), t('register.passwordRequired'));
+            showAlert(t('register.error'), t('register.passwordRequired'), 'warning');
             return false;
         }
         if (!image) {
-            Alert.alert(t('register.error'), t('register.photoRequired'));
+            showAlert(t('register.error'), t('register.photoRequired'), 'warning');
             return false;
         }
         return true;
@@ -106,11 +129,11 @@ const RegisterScreen = ({ navigation }) => {
 
     const validateStep2 = () => {
         if (!age || parseInt(age) < 18 || parseInt(age) > 99) {
-            Alert.alert(t('register.error'), t('register.ageRequired'));
+            showAlert(t('register.error'), t('register.ageRequired'), 'warning');
             return false;
         }
         if (!description.trim() || description.trim().length < 1) {
-            Alert.alert(t('register.error'), t('register.descriptionRequired'));
+            showAlert(t('register.error'), t('register.descriptionRequired'), 'warning');
             return false;
         }
         return true;
@@ -118,7 +141,7 @@ const RegisterScreen = ({ navigation }) => {
 
     const validateStep3 = () => {
         if (!instagram.trim()) {
-            Alert.alert(t('register.error'), t('register.instagramRequired'));
+            showAlert(t('register.error'), t('register.instagramRequired'), 'warning');
             return false;
         }
         return true;
@@ -158,7 +181,7 @@ const RegisterScreen = ({ navigation }) => {
             });
             navigation.replace('MainTabs');
         } catch (error) {
-            Alert.alert(t('register.error'), t('register.errorDesc'));
+            showAlert(t('register.error'), t('register.errorDesc'), 'error');
         } finally {
             setLoading(false);
         }
@@ -188,6 +211,14 @@ const RegisterScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+            <CustomAlert
+                visible={alertConfig.visible}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                type={alertConfig.type}
+                buttons={alertConfig.buttons}
+                onClose={hideAlert}
+            />
             <KeyboardAvoidingView
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={{ flex: 1 }}

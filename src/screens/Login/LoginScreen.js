@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../theme/ThemeContext';
 import RegisterInput from '../Register/components/RegisterInput';
@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Loading from '../../components/Loading';
+import CustomAlert from '../../components/CustomAlert';
 import MatchService from '../../services/MatchService';
 
 const LoginScreen = ({ navigation }) => {
@@ -18,6 +19,28 @@ const LoginScreen = ({ navigation }) => {
     const { theme } = useTheme();
     const colors = theme.colors;
 
+    const [alertConfig, setAlertConfig] = useState({
+        visible: false,
+        title: '',
+        message: '',
+        type: 'info',
+        buttons: []
+    });
+
+    const showAlert = (title, message, type = 'info', buttons = []) => {
+        setAlertConfig({
+            visible: true,
+            title,
+            message,
+            type,
+            buttons
+        });
+    };
+
+    const hideAlert = () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+    };
+
     const toggleLanguage = () => {
         const nextLanguage = i18n.language === 'es' ? 'en' : 'es';
         i18n.changeLanguage(nextLanguage);
@@ -25,7 +48,7 @@ const LoginScreen = ({ navigation }) => {
 
     const handleLogin = async () => {
         if (!email || !password) {
-            Alert.alert(t('login.missingData'), t('login.missingDataDesc'));
+            showAlert(t('login.missingData'), t('login.missingDataDesc'), 'warning');
             return;
         }
 
@@ -34,7 +57,7 @@ const LoginScreen = ({ navigation }) => {
             await MatchService.loginUser(email, password);
             navigation.replace('MainTabs');
         } catch (error) {
-            Alert.alert(t('login.error'), t('login.errorDesc'));
+            showAlert(t('login.error'), t('login.errorDesc'), 'error');
         } finally {
             setLoading(false);
         }
@@ -46,6 +69,14 @@ const LoginScreen = ({ navigation }) => {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+            <CustomAlert
+                visible={alertConfig.visible}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                type={alertConfig.type}
+                buttons={alertConfig.buttons}
+                onClose={hideAlert}
+            />
             <View style={styles.topContainer}>
                 <TouchableOpacity onPress={toggleLanguage} style={styles.languageButton}>
                     <Ionicons name="globe-outline" size={22} color={colors.primary} />

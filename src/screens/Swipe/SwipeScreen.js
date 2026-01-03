@@ -6,9 +6,9 @@ import SwipeCard from './components/SwipeCard';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Loading from '../../components/Loading';
+import CustomAlert from '../../components/CustomAlert';
 
 import MatchService from '../../services/MatchService';
-import { Alert } from 'react-native'; // Import Alert
 
 const SwipeScreen = () => {
     const [users, setUsers] = useState([]);
@@ -20,6 +20,28 @@ const SwipeScreen = () => {
 
     const swipeCardRef = useRef(null);
     const [currentIndex, setCurrentIndex] = useState(0);
+
+    const [alertConfig, setAlertConfig] = useState({
+        visible: false,
+        title: '',
+        message: '',
+        type: 'info',
+        buttons: []
+    });
+
+    const showAlert = (title, message, type = 'info', buttons = []) => {
+        setAlertConfig({
+            visible: true,
+            title,
+            message,
+            type,
+            buttons
+        });
+    };
+
+    const hideAlert = () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+    };
 
     // Initial Load
     React.useEffect(() => {
@@ -52,7 +74,7 @@ const SwipeScreen = () => {
         const result = await MatchService.swipe(user.id, 'like');
 
         if (result.match) {
-            Alert.alert("It's a Match!", `You matched with ${user.name}`);
+            showAlert("It's a Match!", `You matched with ${user.name}`, 'success');
         }
 
         nextCard();
@@ -82,6 +104,14 @@ const SwipeScreen = () => {
 
     return (
         <View style={styles.container}>
+            <CustomAlert
+                visible={alertConfig.visible}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                type={alertConfig.type}
+                buttons={alertConfig.buttons}
+                onClose={hideAlert}
+            />
             {currentIndex < users.length ? (
                 <>
                     <SwipeCard
@@ -94,7 +124,7 @@ const SwipeScreen = () => {
 
                     {/* Back Button (Floating Top Left) */}
                     <TouchableOpacity 
-                        style={[styles.backButton, { top: insets.top + 10 }]}
+                        style={[styles.backButton, { top: insets.top + 10, zIndex: 100 }]}
                         onPress={() => {
                             // Add navigation logic if needed, e.g., navigation.goBack()
                             // For now, it might be a profile view or settings

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { useTheme } from '../../theme/ThemeContext';
 import { colors } from '../../theme/colors';
 import MatchService from '../../services/MatchService';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import Loading from '../../components/Loading';
+import CustomAlert from '../../components/CustomAlert';
 
 const EditProfileScreen = ({ navigation }) => {
     const currentUser = MatchService.getCurrentUser() || {};
@@ -20,6 +21,28 @@ const EditProfileScreen = ({ navigation }) => {
     const colors = theme.colors;
     const { t } = useTranslation();
 
+    const [alertConfig, setAlertConfig] = useState({
+        visible: false,
+        title: '',
+        message: '',
+        type: 'info',
+        buttons: []
+    });
+
+    const showAlert = (title, message, type = 'info', buttons = []) => {
+        setAlertConfig({
+            visible: true,
+            title,
+            message,
+            type,
+            buttons
+        });
+    };
+
+    const hideAlert = () => {
+        setAlertConfig(prev => ({ ...prev, visible: false }));
+    };
+
     const handleSave = async () => {
         setLoading(true);
         try {
@@ -31,12 +54,15 @@ const EditProfileScreen = ({ navigation }) => {
                 whatsapp
             });
 
-            Alert.alert(t('common.success'), t('editProfile.successMessage'), [
-                { text: t('common.ok'), onPress: () => navigation.goBack() }
+            showAlert(t('common.success'), t('editProfile.successMessage'), 'success', [
+                { text: t('common.ok'), onPress: () => {
+                    hideAlert();
+                    navigation.goBack();
+                }}
             ]);
         } catch (error) {
             console.error(error);
-            Alert.alert('Error', 'Failed to update profile');
+            showAlert('Error', 'Failed to update profile', 'error');
         } finally {
             setLoading(false);
         }
@@ -48,6 +74,14 @@ const EditProfileScreen = ({ navigation }) => {
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
+            <CustomAlert
+                visible={alertConfig.visible}
+                title={alertConfig.title}
+                message={alertConfig.message}
+                type={alertConfig.type}
+                buttons={alertConfig.buttons}
+                onClose={hideAlert}
+            />
             <View style={[styles.header, { backgroundColor: colors.card, borderBottomColor: colors.border }]}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Ionicons name="arrow-back" size={24} color={colors.text} />
