@@ -155,15 +155,10 @@ const MatchDetailScreen = () => {
                                 style={styles.actionButton}
                                 onPress={() => Linking.openURL(`https://instagram.com/${profile.instagram.replace('@', '')}`)}
                             >
-                                <LinearGradient
-                                    colors={['rgba(131, 58, 180, 0.9)', 'rgba(253, 29, 29, 0.9)', 'rgba(252, 176, 69, 0.9)']}
-                                    start={{x: 0, y: 0}}
-                                    end={{x: 1, y: 1}}
-                                    style={styles.socialGradient}
-                                >
-                                    <Ionicons name="logo-instagram" size={24} color="#FFF" />
+                                <View style={styles.socialContent}>
+                                    <Ionicons name="logo-instagram" size={22} color="#E1306C" />
                                     <Text style={styles.actionText}>Instagram</Text>
-                                </LinearGradient>
+                                </View>
                             </TouchableOpacity>
                         )}
 
@@ -172,8 +167,8 @@ const MatchDetailScreen = () => {
                                 style={styles.actionButton}
                                 onPress={() => Linking.openURL(`https://wa.me/${profile.whatsapp.replace('+', '')}`)}
                             >
-                                <View style={[styles.socialGradient, { backgroundColor: 'rgba(37, 211, 102, 0.9)' }]}>
-                                    <Ionicons name="logo-whatsapp" size={24} color="#FFF" />
+                                <View style={styles.socialContent}>
+                                    <Ionicons name="logo-whatsapp" size={22} color="#25D366" />
                                     <Text style={styles.actionText}>WhatsApp</Text>
                                 </View>
                             </TouchableOpacity>
@@ -215,7 +210,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        height: height * 0.6,
+        height: height * 0.7, // Increased height for smoother transition
     },
     pagination: {
         position: 'absolute',
@@ -224,27 +219,29 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     dot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        marginHorizontal: 4,
+        width: 4,
+        height: 4,
+        borderRadius: 2,
+        marginHorizontal: 3,
+        backgroundColor: 'rgba(255, 255, 255, 0.3)',
     },
     activeDot: {
-        width: 8,
-        height: 8,
-        transform: [{ scale: 1.2 }],
+        width: 6,
+        height: 6,
+        backgroundColor: '#FFF',
+        transform: [{ scale: 1 }],
     },
     backButton: {
         position: 'absolute',
         left: 20,
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: 'rgba(0,0,0,0.3)',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: 'rgba(0,0,0,0.2)',
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.2)',
+        borderColor: 'rgba(255,255,255,0.1)',
         zIndex: 10,
     },
     contentContainer: {
@@ -252,83 +249,73 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        maxHeight: height * 0.5,
         paddingHorizontal: 20,
     },
     scrollContent: {
-        paddingBottom: 20,
+        paddingBottom: 40,
     },
     headerInfo: {
-        marginBottom: 12,
+        marginBottom: 16,
     },
     nameRow: {
         flexDirection: 'row',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: 10,
+        gap: 8,
     },
     name: {
-        fontSize: 34,
-        fontWeight: '800',
+        fontSize: 28,
+        fontWeight: '700',
         color: '#FFF',
-        textShadowColor: 'rgba(0, 0, 0, 0.5)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 4,
+        letterSpacing: 0.5,
     },
     genderTag: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.2)',
+        backgroundColor: 'rgba(255,255,255,0.1)',
         paddingVertical: 4,
-        paddingHorizontal: 10,
-        borderRadius: 20,
+        paddingHorizontal: 8,
+        borderRadius: 12,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.3)',
+        borderColor: 'rgba(255,255,255,0.1)',
     },
     genderText: {
-        color: '#FFF',
-        fontSize: 14,
-        fontWeight: '600',
+        color: 'rgba(255,255,255,0.9)',
+        fontSize: 12,
+        fontWeight: '500',
         marginLeft: 4,
     },
     bio: {
-        fontSize: 16,
-        lineHeight: 24,
-        color: 'rgba(255,255,255,0.9)',
-        marginBottom: 24,
-        textShadowColor: 'rgba(0, 0, 0, 0.5)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 2,
+        fontSize: 15,
+        lineHeight: 22,
+        color: 'rgba(255,255,255,0.8)',
+        marginBottom: 32,
+        fontWeight: '400',
     },
     actionsContainer: {
         flexDirection: 'row',
-        gap: 15,
+        gap: 12,
     },
     actionButton: {
         flex: 1,
-        borderRadius: 16,
-        overflow: 'hidden',
-        height: 52,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.3,
-        shadowRadius: 4.65,
-        elevation: 8,
-    },
-    socialGradient: {
-        flex: 1,
-        flexDirection: 'row',
+        borderRadius: 25, // Fully rounded
+        height: 50,
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.15)',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    socialContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
         gap: 8,
     },
     actionText: {
-        fontSize: 16,
-        fontWeight: '700',
+        fontSize: 14,
+        fontWeight: '600',
         color: '#FFF',
+        letterSpacing: 0.5,
     }
 });
 
