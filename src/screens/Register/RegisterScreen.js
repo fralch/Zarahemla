@@ -257,7 +257,7 @@ const RegisterScreen = ({ navigation }) => {
 
                             <View style={styles.selectorContainer}>
                                 <Text style={[styles.label, { color: colors.textSecondary }]}>{t('register.gender')}</Text>
-                                <View style={styles.selectorOptions}>
+                                <View style={[styles.selectorOptions, { backgroundColor: colors.inputBackground }]}>
                                     {['male', 'female'].map((opt) => (
                                         <TouchableOpacity
                                             key={opt}
@@ -283,7 +283,7 @@ const RegisterScreen = ({ navigation }) => {
 
                             <View style={styles.selectorContainer}>
                                 <Text style={[styles.label, { color: colors.textSecondary }]}>{t('register.interestedIn')}</Text>
-                                <View style={styles.selectorOptions}>
+                                <View style={[styles.selectorOptions, { backgroundColor: colors.inputBackground }]}>
                                     {['male', 'female'].map((opt) => (
                                         <TouchableOpacity
                                             key={opt}
