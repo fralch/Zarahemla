@@ -56,7 +56,7 @@ const MatchItem = ({ item, colors, t, navigation }) => {
                 <View style={styles.actions}>
                     {user.instagram && (
                         <TouchableOpacity
-                            style={[styles.actionButton, styles.instaButton]}
+                            style={[styles.actionButton, styles.instaButton, { backgroundColor: colors.gray }]}
                             onPress={() => Linking.openURL(user.instagram)}
                         >
                             <Ionicons name="logo-instagram" size={20} color="#E1306C" />
@@ -65,7 +65,7 @@ const MatchItem = ({ item, colors, t, navigation }) => {
 
                     {user.whatsapp && (
                         <TouchableOpacity
-                            style={[styles.actionButton, styles.waitButton]}
+                            style={[styles.actionButton, styles.waitButton, { backgroundColor: colors.gray }]}
                             onPress={() => Linking.openURL(`https://wa.me/${user.whatsapp}`)}
                         >
                             <Ionicons name="logo-whatsapp" size={20} color="#25D366" />
