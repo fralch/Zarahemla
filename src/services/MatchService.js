@@ -92,12 +92,27 @@ class MatchService {
     async updateProfile(updates) {
         try {
             // Check method in docs: PUT / PATCH /profile
+            // Match mobile integration says PATCH /match-api/profile
             await apiService.patch('/profile', updates);
             // Update local state after successful API call
-            this.currentUser = { ...this.currentUser, ...updates };
+            if (this.currentUser) {
+                this.currentUser = { ...this.currentUser, ...updates };
+            }
             return this.currentUser;
         } catch (error) {
             console.error('Error updating profile:', error);
+            throw error;
+        }
+    }
+
+    async updateLocation(locationData) {
+        /**
+         * locationData: { latitude, longitude, city, fcm_token }
+         */
+        try {
+            return await this.updateProfile(locationData);
+        } catch (error) {
+            console.error('Error updating location:', error);
             throw error;
         }
     }
@@ -115,9 +130,9 @@ class MatchService {
     }
 
     // DISCOVERY
-    async getCandidates() {
+    async getCandidates(radius = 50) {
         try {
-            return await apiService.get('/candidates');
+            return await apiService.get(`/candidates?radius=${radius}`);
         } catch (error) {
             console.error('Error fetching candidates:', error);
             return [];
@@ -134,6 +149,25 @@ class MatchService {
             return response;
         } catch (error) {
             console.error('Error swiping:', error);
+            throw error;
+        }
+    }
+
+    // NOTIFICATIONS
+    async getNotifications() {
+        try {
+            return await apiService.get('/notifications');
+        } catch (error) {
+            console.error('Error fetching notifications:', error);
+            return [];
+        }
+    }
+
+    async markNotificationAsRead(notificationId) {
+        try {
+            return await apiService.post(`/notifications/${notificationId}/read`);
+        } catch (error) {
+            console.error('Error marking notification as read:', error);
             throw error;
         }
     }

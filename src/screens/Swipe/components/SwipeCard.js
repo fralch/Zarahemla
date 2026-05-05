@@ -22,7 +22,6 @@ const SWIPE_THRESHOLD = width * 0.3;
 const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
     const { theme } = useTheme();
     const insets = useSafeAreaInsets();
-    // We stick to the requested palette, overriding theme where necessary for the specific look
     
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
@@ -171,8 +170,15 @@ const SwipeCard = forwardRef(({ user, onSwipeLeft, onSwipeRight }, ref) => {
                 >
                     <View style={styles.contentContainer}>
                         <View style={styles.textContainer}>
-                            <Text style={styles.name}>{user.name}, {user.age}</Text>
-                            {/* Mocking Gender Tag if not present, or using a generic tag style */}
+                            <View style={styles.nameRow}>
+                                <Text style={styles.name}>{user.name}, {user.age}</Text>
+                                {user.distance !== undefined && (
+                                    <View style={styles.distanceBadge}>
+                                        <Ionicons name="location" size={12} color="#FFF" />
+                                        <Text style={styles.distanceText}>{user.distance.toFixed(1)} km</Text>
+                                    </View>
+                                )}
+                            </View>
                             {user.gender && (
                                 <View style={styles.tagContainer}>
                                     <Text style={styles.tagText}>{user.gender}</Text>
@@ -231,15 +237,34 @@ const styles = StyleSheet.create({
     textContainer: {
         width: '100%',
     },
+    nameRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        marginBottom: 8,
+    },
     name: {
         fontSize: 28,
         fontWeight: '700',
         color: '#FFFFFF',
         letterSpacing: 0.5,
-        marginBottom: 8,
         textShadowColor: 'rgba(0,0,0,0.5)',
         textShadowOffset: { width: 0, height: 1 },
         textShadowRadius: 4,
+    },
+    distanceBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 68, 88, 0.8)', 
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 12,
+        gap: 4,
+    },
+    distanceText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#FFFFFF',
     },
     tagContainer: {
         backgroundColor: 'rgba(255,255,255,0.15)',

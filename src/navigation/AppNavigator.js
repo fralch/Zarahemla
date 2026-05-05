@@ -9,6 +9,7 @@ import MatchesScreen from '../screens/Matches';
 import MatchDetailScreen from '../screens/Matches/MatchDetailScreen';
 import ProfileScreen from '../screens/Profile';
 import EditProfileScreen from '../screens/Profile/EditProfileScreen';
+import NotificationsScreen from '../screens/Notifications/NotificationsScreen';
 import { useTheme } from '../theme/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import MatchService from '../services/MatchService';
@@ -20,7 +21,6 @@ const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
 function MainTabs() {
-// ... existing MainTabs code ...
     const { theme } = useTheme();
     const { t } = useTranslation();
     return (
@@ -40,6 +40,8 @@ function MainTabs() {
                         iconName = focused ? 'albums' : 'albums-outline';
                     } else if (route.name === 'Matches') {
                         iconName = focused ? 'heart' : 'heart-outline';
+                    } else if (route.name === 'Notifications') {
+                        iconName = focused ? 'notifications' : 'notifications-outline';
                     } else if (route.name === 'Profile') {
                         iconName = focused ? 'person' : 'person-outline';
                     }
@@ -57,6 +59,11 @@ function MainTabs() {
                 name="Matches" 
                 component={MatchesScreen} 
                 options={{ tabBarLabel: t('tabs.matches') }}
+            />
+            <Tab.Screen 
+                name="Notifications" 
+                component={NotificationsScreen} 
+                options={{ tabBarLabel: t('tabs.notifications', 'Alerts') }}
             />
             <Tab.Screen 
                 name="Profile" 
@@ -98,6 +105,7 @@ export default function AppNavigator() {
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Register" component={RegisterScreen} />
                 <Stack.Screen name="MainTabs" component={MainTabs} />
+                <Stack.Screen name="Notifications" component={NotificationsScreen} />
                 <Stack.Screen name="MatchDetail" component={MatchDetailScreen} />
                 <Stack.Screen name="EditProfile" component={EditProfileScreen} />
             </Stack.Navigator>
