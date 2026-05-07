@@ -27,11 +27,11 @@ export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
 
   const handleLogout = useCallback(() => {
     Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
+      'Cerrar sesión',
+      '¿Estás seguro que quieres cerrar sesión?',
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', style: 'destructive', onPress: onLogout },
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Cerrar sesión', style: 'destructive', onPress: onLogout },
       ]
     );
   }, [onLogout]);
@@ -43,7 +43,7 @@ export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
       setSwipeLimit(settings.daily_swipe_limit.toString());
       setMaintenanceMode(settings.maintenance_mode);
     } catch (error) {
-      console.error('Failed to fetch settings:', error);
+      console.error('Error al cargar configuración:', error);
     } finally {
       setLoading(false);
     }
@@ -58,12 +58,12 @@ export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
     const swipeLimitNum = parseInt(swipeLimit, 10);
 
     if (isNaN(radiusNum) || radiusNum < 1) {
-      Alert.alert('Error', 'Radius must be at least 1');
+      Alert.alert('Error', 'El radio debe ser al menos 1');
       return;
     }
 
     if (isNaN(swipeLimitNum) || swipeLimitNum < 1) {
-      Alert.alert('Error', 'Daily swipe limit must be at least 1');
+      Alert.alert('Error', 'El límite diario debe ser al menos 1');
       return;
     }
 
@@ -74,7 +74,7 @@ export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
         daily_swipe_limit: swipeLimitNum,
         maintenance_mode: maintenanceMode,
       });
-      Alert.alert('Success', result.message || 'Settings saved successfully');
+      Alert.alert('Éxito', result.message || 'Configuración guardada');
     } catch (error: any) {
       Alert.alert('Error', error.message);
     } finally {
@@ -93,17 +93,17 @@ export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.title}>Settings</Text>
-        <Text variant="bodyMedium" style={styles.subtitle}>Configure your app</Text>
+        <Text variant="headlineMedium" style={styles.title}>Configuración</Text>
+        <Text variant="bodyMedium" style={styles.subtitle}>Configura tu app</Text>
       </View>
 
       <Surface style={styles.section} elevation={0}>
-        <Text variant="titleMedium" style={styles.sectionTitle}>Discovery Algorithm</Text>
-        
+        <Text variant="titleMedium" style={styles.sectionTitle}>Algoritmo de Descubrimiento</Text>
+
         <View style={styles.settingItem}>
           <View style={styles.settingInfo}>
-            <Text style={styles.settingLabel}>Default Radius</Text>
-            <Text style={styles.settingDescription}>Maximum distance for matching</Text>
+            <Text style={styles.settingLabel}>Radio Predeterminado</Text>
+            <Text style={styles.settingDescription}>Distancia máxima para matching</Text>
           </View>
           <View style={styles.settingControl}>
             <TextInput
@@ -121,8 +121,8 @@ export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
 
         <View style={[styles.settingItem, styles.settingItemLast]}>
           <View style={styles.settingInfo}>
-            <Text style={styles.settingLabel}>Daily Swipe Limit</Text>
-            <Text style={styles.settingDescription}>Max swipes per day per user</Text>
+            <Text style={styles.settingLabel}>Límite Diario de Swipes</Text>
+            <Text style={styles.settingDescription}>Swipes máximos por día por usuario</Text>
           </View>
           <View style={styles.settingControl}>
             <TextInput
@@ -140,9 +140,9 @@ export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
       </Surface>
 
       <Surface style={styles.section} elevation={0}>
-        <Text variant="titleMedium" style={styles.sectionTitle}>System Status</Text>
-        
-        <Pressable 
+        <Text variant="titleMedium" style={styles.sectionTitle}>Estado del Sistema</Text>
+
+        <Pressable
           onPress={() => setMaintenanceMode(!maintenanceMode)}
           style={({ pressed }) => [
             styles.settingItem,
@@ -151,12 +151,12 @@ export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
           ]}
         >
           <View style={styles.settingInfo}>
-            <Text style={styles.settingLabel}>Maintenance Mode</Text>
+            <Text style={styles.settingLabel}>Modo Mantenimiento</Text>
             <Text style={[
               styles.settingDescription,
               maintenanceMode && styles.descriptionActive
             ]}>
-              {maintenanceMode ? 'Users cannot access the app' : 'App is running normally'}
+              {maintenanceMode ? 'Los usuarios no pueden acceder' : 'La app funciona normalmente'}
             </Text>
           </View>
           <Switch
@@ -175,7 +175,7 @@ export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
         disabled={saving}
         buttonColor={COLORS.primary}
       >
-        Save Changes
+        Guardar Cambios
       </Button>
 
       <Button 
@@ -184,7 +184,7 @@ export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
         style={styles.logoutButton}
         textColor={COLORS.error}
       >
-        Logout
+        Cerrar Sesión
       </Button>
 
       <View style={styles.footer}>

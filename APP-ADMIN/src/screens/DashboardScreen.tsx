@@ -54,7 +54,7 @@ export default function DashboardScreen({ api }: DashboardScreenProps) {
       const data = await api.getDashboardStats();
       setStats(data);
     } catch (error) {
-      console.error('Failed to fetch stats:', error);
+      console.error('Error al cargar estadísticas:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -79,11 +79,11 @@ export default function DashboardScreen({ api }: DashboardScreenProps) {
   }
 
   const statsData = stats ? [
-    { title: 'Total Users', value: stats.total_users.toLocaleString(), color: COLORS.primary, accent: '#FFCCD5' },
-    { title: 'Active Matches', value: stats.active_matches.toLocaleString(), color: '#10B981', accent: '#D1FAE5' },
-    { title: 'Pending Reports', value: stats.pending_reports.toLocaleString(), color: '#F59E0B', accent: '#FEF3C7' },
-    { title: 'Pending Photos', value: stats.pending_photos.toLocaleString(), color: '#3B82F6', accent: '#DBEAFE' },
-    { title: 'Banned Users', value: stats.banned_users.toLocaleString(), color: '#EF4444', accent: '#FEE2E2' },
+    { title: 'Usuarios Totales', value: stats.total_users.toLocaleString(), color: COLORS.primary, accent: '#FFCCD5' },
+    { title: 'Matches Activos', value: stats.active_matches.toLocaleString(), color: '#10B981', accent: '#D1FAE5' },
+    { title: 'Reportes Pendientes', value: stats.pending_reports.toLocaleString(), color: '#F59E0B', accent: '#FEF3C7' },
+    { title: 'Fotos Pendientes', value: stats.pending_photos.toLocaleString(), color: '#3B82F6', accent: '#DBEAFE' },
+    { title: 'Usuarios Baneados', value: stats.banned_users.toLocaleString(), color: '#EF4444', accent: '#FEE2E2' },
   ] : [];
 
   return (
@@ -95,8 +95,8 @@ export default function DashboardScreen({ api }: DashboardScreenProps) {
       }
     >
       <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.title}>Dashboard</Text>
-        <Text variant="bodyMedium" style={styles.subtitle}>Overview</Text>
+        <Text variant="headlineMedium" style={styles.title}>Panel</Text>
+        <Text variant="bodyMedium" style={styles.subtitle}>Resumen</Text>
       </View>
 
       <View style={styles.statsGrid}>
@@ -107,9 +107,9 @@ export default function DashboardScreen({ api }: DashboardScreenProps) {
 
       <Card style={styles.insightCard}>
         <Card.Content>
-          <Text variant="titleMedium" style={styles.insightTitle}>Quick Actions</Text>
+          <Text variant="titleMedium" style={styles.insightTitle}>Acciones Rápidas</Text>
           <Paragraph style={styles.insightText}>
-            Review pending photos and reports to keep the community safe.
+            Revisa las fotos y reportes pendientes para mantener la comunidad segura.
           </Paragraph>
         </Card.Content>
       </Card>

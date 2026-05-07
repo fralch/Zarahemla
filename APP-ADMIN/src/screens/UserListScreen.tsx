@@ -45,7 +45,7 @@ export default function UserListScreen({ api }: UserListScreenProps) {
       setHasMore(response.meta.current_page < response.meta.last_page);
       setPage(pageNum);
     } catch (error) {
-      console.error('Failed to fetch users:', error);
+      console.error('Error al cargar usuarios:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -88,19 +88,19 @@ export default function UserListScreen({ api }: UserListScreenProps) {
     if (!selectedUser) return;
     
     Alert.alert(
-      'Ban User',
-      `Are you sure you want to ban ${selectedUser.name}?`,
+      'Banear Usuario',
+      `¿Estás seguro que quieres banear a ${selectedUser.name}?`,
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Cancelar', style: 'cancel' },
         { 
-          text: 'Ban', 
+          text: 'Banear', 
           style: 'destructive',
           onPress: async () => {
             try {
-              await api.banUser(selectedUser.id, 'Banned by admin');
+              await api.banUser(selectedUser.id, 'Baneado por admin');
               hideModal();
               fetchUsers(1, searchQuery);
-              Alert.alert('Success', 'User banned successfully');
+              Alert.alert('Éxito', 'Usuario baneado correctamente');
             } catch (error: any) {
               Alert.alert('Error', error.message);
             }
@@ -117,7 +117,7 @@ export default function UserListScreen({ api }: UserListScreenProps) {
       await api.unbanUser(selectedUser.id);
       hideModal();
       fetchUsers(1, searchQuery);
-      Alert.alert('Success', 'User unbanned successfully');
+      Alert.alert('Éxito', 'Usuario desbaneado correctamente');
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }
@@ -152,12 +152,12 @@ export default function UserListScreen({ api }: UserListScreenProps) {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.title}>Users</Text>
-        <Text variant="bodyMedium" style={styles.subtitle}>Manage registered users</Text>
+        <Text variant="headlineMedium" style={styles.title}>Usuarios</Text>
+        <Text variant="bodyMedium" style={styles.subtitle}>Administrar usuarios registrados</Text>
       </View>
 
       <Searchbar
-        placeholder="Search users..."
+        placeholder="Buscar usuarios..."
         onChangeText={handleSearch}
         value={searchQuery}
         style={styles.searchbar}
@@ -202,7 +202,7 @@ export default function UserListScreen({ api }: UserListScreenProps) {
         )}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text>No users found</Text>
+            <Text>No se encontraron usuarios</Text>
           </View>
         }
       />
@@ -231,7 +231,7 @@ export default function UserListScreen({ api }: UserListScreenProps) {
               
               <View style={styles.modalActions}>
                 <Button mode="outlined" onPress={hideModal} style={{ flex: 1, marginRight: 8 }}>
-                  Close
+                  Cerrar
                 </Button>
                 {selectedUser.status === 'banned' ? (
                   <Button 
@@ -240,7 +240,7 @@ export default function UserListScreen({ api }: UserListScreenProps) {
                     buttonColor={COLORS.success}
                     style={{ flex: 1 }}
                   >
-                    Unban
+                    Desbanear
                   </Button>
                 ) : (
                   <Button 
@@ -249,7 +249,7 @@ export default function UserListScreen({ api }: UserListScreenProps) {
                     buttonColor={COLORS.error}
                     style={{ flex: 1 }}
                   >
-                    Ban
+                    Banear
                   </Button>
                 )}
               </View>

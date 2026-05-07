@@ -70,7 +70,7 @@ export default function PhotoModerationScreen({ api }: PhotoModerationScreenProp
       setHasMore(response.meta.current_page < response.meta.last_page);
       setPage(pageNum);
     } catch (error) {
-      console.error('Failed to fetch photos:', error);
+      console.error('Error al cargar fotos:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -95,17 +95,17 @@ export default function PhotoModerationScreen({ api }: PhotoModerationScreenProp
 
   const handleApprove = async (photoId: string) => {
     Alert.alert(
-      'Approve Photo',
-      'Are you sure you want to approve this photo?',
+      'Aprobar Foto',
+      '¿Estás seguro que quieres aprobar esta foto?',
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Approve',
+          text: 'Aprobar',
           onPress: async () => {
             try {
               await api.approvePhoto(photoId);
               setPhotos(photos.filter(p => p.id !== photoId));
-              Alert.alert('Success', 'Photo approved');
+              Alert.alert('Éxito', 'Foto aprobada');
             } catch (error: any) {
               Alert.alert('Error', error.message);
             }
@@ -125,7 +125,7 @@ export default function PhotoModerationScreen({ api }: PhotoModerationScreenProp
     if (!selectedPhotoId) return;
     
     if (!rejectReason.trim()) {
-      Alert.alert('Error', 'Please provide a reason for rejection');
+      Alert.alert('Error', 'Por favor ingresa una razón');
       return;
     }
 
@@ -133,7 +133,7 @@ export default function PhotoModerationScreen({ api }: PhotoModerationScreenProp
       await api.rejectPhoto(selectedPhotoId, rejectReason);
       setRejectModalVisible(false);
       setPhotos(photos.filter(p => p.id !== selectedPhotoId));
-      Alert.alert('Success', 'Photo rejected');
+      Alert.alert('Éxito', 'Foto rechazada');
     } catch (error: any) {
       Alert.alert('Error', error.message);
     }
@@ -150,9 +150,9 @@ export default function PhotoModerationScreen({ api }: PhotoModerationScreenProp
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.title}>Moderation</Text>
+        <Text variant="headlineMedium" style={styles.title}>Moderación</Text>
         <Text variant="bodyMedium" style={styles.subtitle}>
-          {photos.length} pending review
+          {photos.length} pendientes de revisar
         </Text>
       </View>
 
@@ -179,9 +179,9 @@ export default function PhotoModerationScreen({ api }: PhotoModerationScreenProp
             <View style={styles.emptyIcon}>
               <IconButton icon="check-circle" iconColor={COLORS.success} size={48} />
             </View>
-            <Text variant="titleMedium" style={styles.emptyTitle}>All caught up!</Text>
+            <Text variant="titleMedium" style={styles.emptyTitle}>¡Todo listo!</Text>
             <Text variant="bodyMedium" style={styles.emptyText}>
-              No photos pending moderation.
+              No hay fotos pendientes.
             </Text>
           </View>
         }
@@ -196,18 +196,18 @@ export default function PhotoModerationScreen({ api }: PhotoModerationScreenProp
           <Surface style={styles.modalSurface} elevation={0}>
             <View style={styles.modalHeader}>
               <IconButton icon="alert-circle" iconColor={COLORS.error} size={28} />
-              <Text variant="titleLarge" style={styles.modalTitle}>Reject Photo</Text>
+              <Text variant="titleLarge" style={styles.modalTitle}>Rechazar Foto</Text>
             </View>
             
             <Text variant="bodyMedium" style={styles.modalText}>
-              Please provide a reason for rejection:
+              Por favor ingresa una razón:
             </Text>
             
             <TextInput
               mode="outlined"
               value={rejectReason}
               onChangeText={setRejectReason}
-              placeholder="Reason for rejection"
+              placeholder="Razón del rechazo"
               multiline
               numberOfLines={3}
               style={styles.textInput}
@@ -221,7 +221,7 @@ export default function PhotoModerationScreen({ api }: PhotoModerationScreenProp
                 onPress={() => setRejectModalVisible(false)} 
                 style={{ flex: 1, marginRight: 8 }}
               >
-                Cancel
+                Cancelar
               </Button>
               <Button 
                 mode="contained" 
@@ -229,7 +229,7 @@ export default function PhotoModerationScreen({ api }: PhotoModerationScreenProp
                 buttonColor={COLORS.error}
                 style={{ flex: 1 }}
               >
-                Reject
+                Rechazar
               </Button>
             </View>
           </Surface>

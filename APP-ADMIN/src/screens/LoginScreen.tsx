@@ -25,7 +25,7 @@ export default function LoginScreen({ onLogin, api }: LoginScreenProps) {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please enter email and password');
+      Alert.alert('Error', 'Por favor ingresa email y contraseña');
       return;
     }
 
@@ -36,7 +36,7 @@ export default function LoginScreen({ onLogin, api }: LoginScreenProps) {
         onLogin();
       }
     } catch (error: any) {
-      Alert.alert('Login Failed', error.message || 'Invalid credentials');
+      Alert.alert('Error de acceso', error.message || 'Credenciales inválidas');
     } finally {
       setLoading(false);
     }
@@ -65,11 +65,11 @@ export default function LoginScreen({ onLogin, api }: LoginScreenProps) {
             <Text style={styles.logoText}>Z</Text>
           </View>
           <Text variant="displaySmall" style={styles.title}>Zarahemla</Text>
-          <Text variant="bodyMedium" style={styles.subtitle}>Admin Console</Text>
+          <Text variant="bodyMedium" style={styles.subtitle}>Consola Admin</Text>
         </View>
 
         <Surface style={styles.surface} elevation={0}>
-          <Text variant="titleMedium" style={styles.formTitle}>Sign In</Text>
+          <Text variant="titleMedium" style={styles.formTitle}>Iniciar Sesión</Text>
           
           <TextInput
             label="Email"
@@ -84,7 +84,7 @@ export default function LoginScreen({ onLogin, api }: LoginScreenProps) {
             textColor={COLORS.text}
           />
           <TextInput
-            label="Password"
+            label="Contraseña"
             value={password}
             onChangeText={setPassword}
             secureTextEntry={!showPassword}
@@ -110,12 +110,12 @@ export default function LoginScreen({ onLogin, api }: LoginScreenProps) {
             buttonColor={COLORS.primary}
             textColor="#FFFFFF"
           >
-            {loading ? 'Signing in...' : 'Continue'}
+            {loading ? 'Ingresando...' : 'Continuar'}
           </Button>
         </Surface>
 
         <Text variant="bodySmall" style={styles.footer}>
-          Secure admin access only
+          Acceso exclusivo de admin
         </Text>
       </View>
     </KeyboardAvoidingView>
