@@ -1,61 +1,240 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, FlatList, Image, Dimensions } from 'react-native';
-import { Text, Button, Card, IconButton, Portal, Modal } from 'react-native-paper';
+import React, { useState, useCallback } from 'react';
+import { View, StyleSheet, FlatList, RefreshControl, Dimensions, Alert, Pressable, Image } from 'react-native';
+import { Text, Button, Card, IconButton, Portal, Modal, ActivityIndicator, TextInput, Surface } from 'react-native-paper';
+
+interface PhotoModerationScreenProps {
+  api: any;
+}
+
+const COLORS = {
+  primary: '#FF4458',
+  background: '#F8F9FA',
+  surface: '#FFFFFF',
+  text: '#1A1A2E',
+  textSecondary: '#6B7280',
+  success: '#10B981',
+  error: '#EF4444',
+  border: '#E5E7EB',
+};
 
 const { width } = Dimensions.get('window');
-const COLUMN_WIDTH = width / 2 - 20;
+const COLUMN_WIDTH = (width - 44) / 2;
 
-const PENDING_PHOTOS = [
-  { id: '1', user: 'Juan Pérez', url: 'https://picsum.photos/seed/p1/400/400' },
-  { id: '2', user: 'Maria Garcia', url: 'https://picsum.photos/seed/p2/400/400' },
-  { id: '3', user: 'Carlos Sosa', url: 'https://picsum.photos/seed/p3/400/400' },
-  { id: '4', user: 'Ana Lopez', url: 'https://picsum.photos/seed/p4/400/400' },
-];
+const PhotoCard = ({ item, onApprove, onReject }: { 
+  item: any; 
+  onApprove: () => void; 
+  onReject: () => void;
+}) => (
+  <Card style={styles.card}>
+    <View style={styles.imageContainer}>
+      <Image source={{ uri: item.url }} style={styles.image} />
+      <View style={styles.imageOverlay}>
+        <Pressable onPress={onApprove} style={({ pressed }) => [
+          styles.actionButton, styles.approveBtn, pressed && styles.actionPressed
+        ]}>
+          <IconButton icon="check" iconColor="#FFFFFF" size={20} />
+        </Pressable>
+        <Pressable onPress={onReject} style={({ pressed }) => [
+          styles.actionButton, styles.rejectBtn, pressed && styles.actionPressed
+        ]}>
+          <IconButton icon="close" iconColor="#FFFFFF" size={20} />
+        </Pressable>
+      </View>
+    </View>
+    <Card.Content style={styles.cardContent}>
+      <Text style={styles.userName} numberOfLines={1}>{item.user_name}</Text>
+    </Card.Content>
+  </Card>
+);
 
-export default function PhotoModerationScreen() {
-  const [photos, setPhotos] = useState(PENDING_PHOTOS);
+export default function PhotoModerationScreen({ api }: PhotoModerationScreenProps) {
+  const [photos, setPhotos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [rejectModalVisible, setRejectModalVisible] = useState(false);
+  const [selectedPhotoId, setSelectedPhotoId] = useState<string | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
 
-  const handleAction = (id: string, action: 'approve' | 'reject') => {
-    // In a real app, call AdminApiService
-    setPhotos(photos.filter(p => p.id !== id));
-    console.log(`Photo ${id} ${action}ed`);
+  const fetchPhotos = useCallback(async (pageNum: number = 1) => {
+    try {
+      const response = await api.getPhotos({ status: 'pending', page: pageNum, per_page: 20 });
+      
+      if (pageNum === 1) {
+        setPhotos(response.data);
+      } else {
+        setPhotos(prev => [...prev, ...response.data]);
+      }
+      
+      setHasMore(response.meta.current_page < response.meta.last_page);
+      setPage(pageNum);
+    } catch (error) {
+      console.error('Failed to fetch photos:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [api]);
+
+  React.useEffect(() => {
+    fetchPhotos(1);
+  }, []);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchPhotos(1);
   };
+
+  const handleLoadMore = () => {
+    if (!loading && hasMore && !refreshing) {
+      setLoading(true);
+      fetchPhotos(page + 1);
+    }
+  };
+
+  const handleApprove = async (photoId: string) => {
+    Alert.alert(
+      'Approve Photo',
+      'Are you sure you want to approve this photo?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Approve',
+          onPress: async () => {
+            try {
+              await api.approvePhoto(photoId);
+              setPhotos(photos.filter(p => p.id !== photoId));
+              Alert.alert('Success', 'Photo approved');
+            } catch (error: any) {
+              Alert.alert('Error', error.message);
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const openRejectModal = (photoId: string) => {
+    setSelectedPhotoId(photoId);
+    setRejectReason('');
+    setRejectModalVisible(true);
+  };
+
+  const handleReject = async () => {
+    if (!selectedPhotoId) return;
+    
+    if (!rejectReason.trim()) {
+      Alert.alert('Error', 'Please provide a reason for rejection');
+      return;
+    }
+
+    try {
+      await api.rejectPhoto(selectedPhotoId, rejectReason);
+      setRejectModalVisible(false);
+      setPhotos(photos.filter(p => p.id !== selectedPhotoId));
+      Alert.alert('Success', 'Photo rejected');
+    } catch (error: any) {
+      Alert.alert('Error', error.message);
+    }
+  };
+
+  if (loading && photos.length === 0) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
-      <Text variant="headlineSmall" style={styles.header}>Pending Moderation</Text>
+      <View style={styles.header}>
+        <Text variant="headlineMedium" style={styles.title}>Moderation</Text>
+        <Text variant="bodyMedium" style={styles.subtitle}>
+          {photos.length} pending review
+        </Text>
+      </View>
+
       <FlatList
         data={photos}
         keyExtractor={(item) => item.id}
         numColumns={2}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} colors={[COLORS.primary]} />
+        }
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={loading && photos.length > 0 ? <ActivityIndicator style={styles.footer} /> : null}
+        contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
-          <Card style={styles.card}>
-            <Card.Cover source={{ uri: item.url }} style={styles.image} />
-            <Card.Content style={styles.cardContent}>
-              <Text variant="bodySmall" numberOfLines={1}>{item.user}</Text>
-              <View style={styles.actions}>
-                <IconButton
-                  icon="check-circle"
-                  iconColor="#4CAF50"
-                  size={24}
-                  onPress={() => handleAction(item.id, 'approve')}
-                />
-                <IconButton
-                  icon="close-circle"
-                  iconColor="#F44336"
-                  size={24}
-                  onPress={() => handleAction(item.id, 'reject')}
-                />
-              </View>
-            </Card.Content>
-          </Card>
+          <PhotoCard 
+            item={item}
+            onApprove={() => handleApprove(item.id)}
+            onReject={() => openRejectModal(item.id)}
+          />
         )}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text variant="bodyLarge">No photos pending moderation.</Text>
+            <View style={styles.emptyIcon}>
+              <IconButton icon="check-circle" iconColor={COLORS.success} size={48} />
+            </View>
+            <Text variant="titleMedium" style={styles.emptyTitle}>All caught up!</Text>
+            <Text variant="bodyMedium" style={styles.emptyText}>
+              No photos pending moderation.
+            </Text>
           </View>
         }
       />
+
+      <Portal>
+        <Modal 
+          visible={rejectModalVisible} 
+          onDismiss={() => setRejectModalVisible(false)}
+          contentContainerStyle={styles.modal}
+        >
+          <Surface style={styles.modalSurface} elevation={0}>
+            <View style={styles.modalHeader}>
+              <IconButton icon="alert-circle" iconColor={COLORS.error} size={28} />
+              <Text variant="titleLarge" style={styles.modalTitle}>Reject Photo</Text>
+            </View>
+            
+            <Text variant="bodyMedium" style={styles.modalText}>
+              Please provide a reason for rejection:
+            </Text>
+            
+            <TextInput
+              mode="outlined"
+              value={rejectReason}
+              onChangeText={setRejectReason}
+              placeholder="Reason for rejection"
+              multiline
+              numberOfLines={3}
+              style={styles.textInput}
+              outlineColor={COLORS.border}
+              activeOutlineColor={COLORS.error}
+            />
+            
+            <View style={styles.modalActions}>
+              <Button 
+                mode="outlined" 
+                onPress={() => setRejectModalVisible(false)} 
+                style={{ flex: 1, marginRight: 8 }}
+              >
+                Cancel
+              </Button>
+              <Button 
+                mode="contained" 
+                onPress={handleReject}
+                buttonColor={COLORS.error}
+                style={{ flex: 1 }}
+              >
+                Reject
+              </Button>
+            </View>
+          </Surface>
+        </Modal>
+      </Portal>
     </View>
   );
 }
@@ -63,33 +242,136 @@ export default function PhotoModerationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: COLORS.background,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
-    margin: 10,
-    fontWeight: 'bold',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 8,
+  },
+  title: {
+    fontWeight: '700',
+    color: COLORS.text,
+    letterSpacing: -0.5,
+  },
+  subtitle: {
+    color: COLORS.textSecondary,
+    marginTop: 2,
+  },
+  listContent: {
+    padding: 12,
+    paddingBottom: 24,
   },
   card: {
     width: COLUMN_WIDTH,
-    margin: 5,
+    margin: 6,
+    borderRadius: 16,
+    backgroundColor: COLORS.surface,
     overflow: 'hidden',
   },
+  imageContainer: {
+    position: 'relative',
+  },
   image: {
-    height: 150,
+    width: COLUMN_WIDTH - 12,
+    height: COLUMN_WIDTH,
+    backgroundColor: '#F3F4F6',
   },
-  cardContent: {
-    padding: 5,
-    alignItems: 'center',
-  },
-  actions: {
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: 'row',
     justifyContent: 'center',
+    padding: 8,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  actionButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 4,
+  },
+  approveBtn: {
+    backgroundColor: COLORS.success,
+  },
+  rejectBtn: {
+    backgroundColor: COLORS.error,
+  },
+  actionPressed: {
+    opacity: 0.7,
+    transform: [{ scale: 0.95 }],
+  },
+  cardContent: {
+    padding: 12,
+  },
+  userName: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: COLORS.text,
+  },
+  footer: {
+    marginVertical: 20,
   },
   empty: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 100,
+    paddingTop: 80,
+  },
+  emptyIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#D1FAE5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontWeight: '600',
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  emptyText: {
+    color: COLORS.textSecondary,
+  },
+  modal: {
+    margin: 20,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  modalSurface: {
+    padding: 24,
+    backgroundColor: COLORS.surface,
+    borderRadius: 20,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontWeight: '700',
+    color: COLORS.text,
+    marginLeft: 8,
+  },
+  modalText: {
+    color: COLORS.textSecondary,
+    marginBottom: 16,
+  },
+  textInput: {
+    marginBottom: 20,
+    backgroundColor: COLORS.surface,
+  },
+  modalActions: {
+    flexDirection: 'row',
   },
 });
