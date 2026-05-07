@@ -30,6 +30,15 @@ export interface User {
   reports_count?: number;
   created_at: string;
   last_active_at?: string;
+  age?: number;
+  gender?: string;
+  interested_in?: string;
+  city?: string;
+  instagram?: string;
+  whatsapp?: string;
+  description?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface UsersResponse {
@@ -46,9 +55,19 @@ export interface Photo {
   id: string;
   user_id: string;
   user_name: string;
-  url: string;
+  url?: string;
+  photo_url?: string;
   status: string;
   created_at: string;
+  user_age?: number;
+  user_gender?: string;
+  user_city?: string;
+  user_instagram?: string;
+  user_whatsapp?: string;
+  age?: number;
+  gender?: string;
+  city?: string;
+  instagram?: string;
 }
 
 export interface PhotosResponse {

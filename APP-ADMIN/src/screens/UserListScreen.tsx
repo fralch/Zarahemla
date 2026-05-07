@@ -141,6 +141,62 @@ export default function UserListScreen({ api }: UserListScreenProps) {
     }
   };
 
+  const getGenderColor = (gender: string | undefined) => {
+    if (!gender) return COLORS.textSecondary;
+    switch (gender.toLowerCase()) {
+      case 'male': return '#3B82F6';
+      case 'female': return '#EC4899';
+      case 'non-binary': return '#8B5CF6';
+      case 'other': return '#F59E0B';
+      default: return COLORS.textSecondary;
+    }
+  };
+
+  const getGenderBg = (gender: string | undefined) => {
+    if (!gender) return '#F3F4F6';
+    switch (gender.toLowerCase()) {
+      case 'male': return '#DBEAFE';
+      case 'female': return '#FCE7F3';
+      case 'non-binary': return '#EDE9FE';
+      case 'other': return '#FEF3C7';
+      default: return '#F3F4F6';
+    }
+  };
+
+  const getGenderLabel = (gender: string | undefined) => {
+    if (!gender) return 'No especificado';
+    switch (gender.toLowerCase()) {
+      case 'male': return 'Masculino';
+      case 'female': return 'Femenino';
+      case 'non-binary': return 'No binario';
+      case 'other': return 'Otro';
+      default: return gender;
+    }
+  };
+
+  const getInterestedInLabel = (interestedIn: string | undefined) => {
+    if (!interestedIn) return 'No especificado';
+    switch (interestedIn.toLowerCase()) {
+      case 'male': return 'Hombres';
+      case 'female': return 'Mujeres';
+      case 'both': return 'Todos';
+      case 'non-binary': return 'No binarios';
+      default: return interestedIn;
+    }
+  };
+
+  const DetailRow = ({ icon, label, value }: { icon: string; label: string; value: string | undefined }) => (
+    value ? (
+      <View style={styles.detailRow}>
+        <Text style={styles.detailIcon}>{icon}</Text>
+        <View style={styles.detailContent}>
+          <Text style={styles.detailLabel}>{label}</Text>
+          <Text style={styles.detailValue}>{value}</Text>
+        </View>
+      </View>
+    ) : null
+  );
+
   if (loading && users.length === 0) {
     return (
       <View style={[styles.container, styles.centered]}>
@@ -191,6 +247,17 @@ export default function UserListScreen({ api }: UserListScreenProps) {
             <View style={styles.userInfo}>
               <Text style={styles.userName}>{item.name}</Text>
               <Text style={styles.userEmail}>{item.email}</Text>
+              <View style={styles.userMetaRow}>
+                {item.gender && (
+                  <View style={[styles.metaBadge, { backgroundColor: getGenderBg(item.gender) }]}>
+                    <Text style={[styles.metaBadgeText, { color: getGenderColor(item.gender) }]}>
+                      {getGenderLabel(item.gender)}
+                    </Text>
+                  </View>
+                )}
+                {item.age && <Text style={styles.ageText}>{item.age} años</Text>}
+                {item.city && <Text style={styles.cityMeta}>📍 {item.city}</Text>}
+              </View>
             </View>
             <Chip 
               style={{ backgroundColor: getStatusBg(item.status) }}
@@ -223,11 +290,55 @@ export default function UserListScreen({ api }: UserListScreenProps) {
                 </View>
               </View>
               
-              <Chip style={{ alignSelf: 'flex-start', marginBottom: 24, backgroundColor: getStatusBg(selectedUser.status) }}>
+              <Chip style={{ alignSelf: 'flex-start', marginBottom: 16, backgroundColor: getStatusBg(selectedUser.status) }}>
                 <Text style={{ color: getStatusColor(selectedUser.status), fontWeight: '600' }}>
                   {selectedUser.status?.toUpperCase()}
                 </Text>
               </Chip>
+
+              <View style={styles.userDetails}>
+                {(selectedUser.age || selectedUser.gender || selectedUser.city) && (
+                  <View style={styles.detailsSection}>
+                    {selectedUser.age && (
+                      <View style={[styles.genderChip, { backgroundColor: '#F3F4F6' }]}>
+                        <Text style={[styles.genderChipText, { color: COLORS.text }]}>
+                          {selectedUser.age} años
+                        </Text>
+                      </View>
+                    )}
+                    {selectedUser.gender && (
+                      <View style={[styles.genderChip, { backgroundColor: getGenderBg(selectedUser.gender) }]}>
+                        <Text style={[styles.genderChipText, { color: getGenderColor(selectedUser.gender) }]}>
+                          {getGenderLabel(selectedUser.gender)}
+                        </Text>
+                      </View>
+                    )}
+                    {selectedUser.interested_in && (
+                      <View style={[styles.genderChip, { backgroundColor: '#E0E7FF' }]}>
+                        <Text style={[styles.genderChipText, { color: '#4F46E5' }]}>
+                          {getInterestedInLabel(selectedUser.interested_in)}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                )}
+
+                {selectedUser.city && (
+                  <DetailRow icon="📍" label="Ciudad" value={selectedUser.city} />
+                )}
+                {selectedUser.description && (
+                  <DetailRow icon="📝" label="Descripción" value={selectedUser.description} />
+                )}
+                {selectedUser.instagram && (
+                  <DetailRow icon="📸" label="Instagram" value={`@${selectedUser.instagram}`} />
+                )}
+                {selectedUser.whatsapp && (
+                  <DetailRow icon="💬" label="WhatsApp" value={selectedUser.whatsapp} />
+                )}
+                {selectedUser.latitude && selectedUser.longitude && (
+                  <DetailRow icon="🌍" label="Ubicación" value={`${selectedUser.latitude.toFixed(4)}, ${selectedUser.longitude.toFixed(4)}`} />
+                )}
+              </View>
               
               <View style={styles.modalActions}>
                 <Button mode="outlined" onPress={hideModal} style={{ flex: 1, marginRight: 8 }}>
@@ -341,6 +452,30 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginTop: 2,
   },
+  userMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 6,
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  metaBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  metaBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+  },
+  ageText: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+  },
+  cityMeta: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+  },
   footer: {
     marginVertical: 20,
   },
@@ -391,5 +526,47 @@ const styles = StyleSheet.create({
   },
   modalActions: {
     flexDirection: 'row',
+  },
+  userDetails: {
+    marginBottom: 20,
+  },
+  detailsSection: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 16,
+    gap: 8,
+  },
+  genderChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  genderChipText: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  detailIcon: {
+    fontSize: 16,
+    marginRight: 10,
+    marginTop: 2,
+  },
+  detailContent: {
+    flex: 1,
+  },
+  detailLabel: {
+    fontSize: 11,
+    color: COLORS.textSecondary,
+    textTransform: 'uppercase',
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  detailValue: {
+    fontSize: 14,
+    color: COLORS.text,
   },
 });

@@ -65,8 +65,8 @@ function AdminTabs({ onLogout }: { onLogout: () => void }) {
           backgroundColor: COLORS.surface,
           shadowColor: 'transparent',
           elevation: 0,
-          paddingTop: insets.top,
         },
+        headerStatusBarStyle: 'dark-content',
         headerTintColor: COLORS.text,
         headerTitleStyle: {
           fontWeight: '700',
