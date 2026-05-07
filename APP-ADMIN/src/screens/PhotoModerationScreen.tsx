@@ -66,6 +66,7 @@ const PhotoCard = ({ item, userProfile, onApprove, onReject }: {
   const age = userProfile?.age || item.user_age || item.age;
   const city = userProfile?.city || item.user_city || item.city;
   const instagram = userProfile?.instagram || item.user_instagram || item.instagram;
+  const firstName = item.user_name ? item.user_name.split(' ')[0] : '';
   
   return (
     <Card style={styles.card}>
@@ -97,7 +98,7 @@ const PhotoCard = ({ item, userProfile, onApprove, onReject }: {
       </View>
       <Card.Content style={styles.cardContent}>
         <View style={styles.userInfoRow}>
-          <Text style={styles.userName} numberOfLines={1}>{item.user_name}</Text>
+          <Text style={styles.userName} numberOfLines={1}>{firstName}</Text>
           {gender && (
             <View style={[styles.genderBadge, { backgroundColor: genderColor + '20' }]}>
               <Text style={[styles.genderBadgeText, { color: genderColor }]}>
