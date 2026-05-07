@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import LoginScreen from '../screens/LoginScreen';
 import DashboardScreen from '../screens/DashboardScreen';
@@ -26,6 +27,8 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function AdminTabs({ onLogout }: { onLogout: () => void }) {
+  const insets = useSafeAreaInsets();
+  
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -50,8 +53,8 @@ function AdminTabs({ onLogout }: { onLogout: () => void }) {
           backgroundColor: COLORS.surface,
           borderTopColor: COLORS.border,
           borderTopWidth: 1,
-          height: 60,
-          paddingBottom: 8,
+          height: 60 + insets.bottom,
+          paddingBottom: 8 + insets.bottom,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
@@ -62,6 +65,7 @@ function AdminTabs({ onLogout }: { onLogout: () => void }) {
           backgroundColor: COLORS.surface,
           shadowColor: 'transparent',
           elevation: 0,
+          paddingTop: insets.top,
         },
         headerTintColor: COLORS.text,
         headerTitleStyle: {
