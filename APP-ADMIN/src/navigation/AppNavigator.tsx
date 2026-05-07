@@ -25,7 +25,7 @@ const COLORS = {
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function AdminTabs() {
+function AdminTabs({ onLogout }: { onLogout: () => void }) {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -81,7 +81,7 @@ function AdminTabs() {
         {() => <PhotoModerationScreen api={adminApiService} />}
       </Tab.Screen>
       <Tab.Screen name="Settings">
-        {() => <SettingsScreen api={adminApiService} />}
+        {() => <SettingsScreen api={adminApiService} onLogout={onLogout} />}
       </Tab.Screen>
     </Tab.Navigator>
   );
@@ -119,7 +119,9 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthenticated ? (
-          <Stack.Screen name="AdminRoot" component={AdminTabs} />
+          <Stack.Screen name="AdminRoot">
+            {() => <AdminTabs onLogout={handleLogout} />}
+          </Stack.Screen>
         ) : (
           <Stack.Screen name="Login">
             {() => <LoginScreen api={adminApiService} onLogin={handleLogin} />}

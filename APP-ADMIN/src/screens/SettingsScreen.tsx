@@ -4,6 +4,7 @@ import { TextInput, Button, Text, Switch, ActivityIndicator, Surface } from 'rea
 
 interface SettingsScreenProps {
   api: any;
+  onLogout: () => void;
 }
 
 const COLORS = {
@@ -17,12 +18,23 @@ const COLORS = {
   border: '#E5E7EB',
 };
 
-export default function SettingsScreen({ api }: SettingsScreenProps) {
+export default function SettingsScreen({ api, onLogout }: SettingsScreenProps) {
   const [radius, setRadius] = useState('50');
   const [swipeLimit, setSwipeLimit] = useState('100');
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const handleLogout = useCallback(() => {
+    Alert.alert(
+      'Logout',
+      'Are you sure you want to logout?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Logout', style: 'destructive', onPress: onLogout },
+      ]
+    );
+  }, [onLogout]);
 
   const fetchSettings = useCallback(async () => {
     try {
@@ -166,6 +178,15 @@ export default function SettingsScreen({ api }: SettingsScreenProps) {
         Save Changes
       </Button>
 
+      <Button 
+        mode="outlined" 
+        onPress={handleLogout} 
+        style={styles.logoutButton}
+        textColor={COLORS.error}
+      >
+        Logout
+      </Button>
+
       <View style={styles.footer}>
         <Text style={styles.footerText}>Zarahemla Admin v1.0</Text>
       </View>
@@ -266,6 +287,12 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderRadius: 12,
     paddingVertical: 4,
+  },
+  logoutButton: {
+    marginTop: 12,
+    borderRadius: 12,
+    paddingVertical: 4,
+    borderColor: COLORS.error,
   },
   footer: {
     alignItems: 'center',

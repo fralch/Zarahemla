@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert, KeyboardAvoidingView, Platform, Pressable } from 'react-native';
-import { TextInput, Button, Text, Surface } from 'react-native-paper';
+import { TextInput, Button, Text, Surface, IconButton } from 'react-native-paper';
 
 interface LoginScreenProps {
   onLogin: () => void;
@@ -21,6 +21,7 @@ export default function LoginScreen({ onLogin, api }: LoginScreenProps) {
   const [email, setEmail] = useState('admin@gmail.com');
   const [password, setPassword] = useState('12345678');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -86,12 +87,18 @@ export default function LoginScreen({ onLogin, api }: LoginScreenProps) {
             label="Password"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            secureTextEntry={!showPassword}
             mode="outlined"
             style={styles.input}
             outlineColor={COLORS.border}
             activeOutlineColor={COLORS.primary}
             textColor={COLORS.text}
+            right={
+              <TextInput.Icon
+                icon={showPassword ? 'eye-off' : 'eye'}
+                onPress={() => setShowPassword(!showPassword)}
+              />
+            }
           />
           
           <Button 
