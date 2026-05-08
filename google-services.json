@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "414390790850",
+    "project_id": "app-cita-29b30",
+    "storage_bucket": "app-cita-29b30.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:414390790850:android:329775d31f72c977e0e95b",
+        "android_client_info": {
+          "package_name": "com.fralch.zarahemla"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBX3fUrKWn4qM5ZrIfrzEKZiCjIpCCANBg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
