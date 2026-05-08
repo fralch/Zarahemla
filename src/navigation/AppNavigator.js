@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, createRef } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -19,6 +19,7 @@ import Loading from '../components/Loading';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+export const navigationRef = createRef();
 
 function MainTabs() {
     const { theme } = useTheme();
@@ -100,7 +101,7 @@ export default function AppNavigator() {
     }
 
     return (
-        <NavigationContainer theme={theme}>
+        <NavigationContainer ref={navigationRef} theme={theme}>
             <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="Login" component={LoginScreen} />
                 <Stack.Screen name="Register" component={RegisterScreen} />
