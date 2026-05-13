@@ -3,6 +3,9 @@
     "name": "Zarahemla",
     "slug": "Zarahemla",
     "version": "1.0.0",
+    "updates": {
+      "enabled": false
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,7 +22,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.fralch.Zarahemla",
+      "package": "com.fralch.zarahemla",
       "googleServicesFile": "./google-services.json"
     },
     "web": {
