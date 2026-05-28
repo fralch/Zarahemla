@@ -1,4 +1,5 @@
 import apiService from './ApiService';
+import { getFcmTokenForLogin } from './NotificationService';
 
 class MatchService {
     constructor() {
@@ -10,6 +11,7 @@ class MatchService {
             await apiService.init();
             if (apiService.getToken()) {
                 this.currentUser = await apiService.get('/me');
+                await this.syncPushToken();
                 return this.currentUser;
             }
             return null;
@@ -22,13 +24,18 @@ class MatchService {
     async registerUser(userData) {
         try {
             const { image, ...profileData } = userData;
+            const fcmToken = await getFcmTokenForLogin();
             
             // Call register endpoint
-            const response = await apiService.post('/register', profileData);
+            const response = await apiService.post('/register', {
+                ...profileData,
+                ...(fcmToken ? { fcm_token: fcmToken } : {}),
+            });
             
             if (response.token && response.user) {
                 await apiService.setToken(response.token);
                 this.currentUser = response.user;
+                await this.syncPushToken(fcmToken);
 
                 // Upload photo if provided
                 if (image) {
@@ -47,11 +54,18 @@ class MatchService {
 
     async loginUser(email, password) {
         try {
-            const response = await apiService.post('/login', { email, password });
+            const fcmToken = await getFcmTokenForLogin();
+            const payload = {
+                email,
+                password,
+                ...(fcmToken ? { fcm_token: fcmToken } : {}),
+            };
+            const response = await apiService.post('/login', payload);
             
             if (response.token && response.user) {
                 await apiService.setToken(response.token);
                 this.currentUser = response.user;
+                await this.syncPushToken(fcmToken);
                 return this.currentUser;
             } else {
                 throw new Error('Login response missing token or user');
@@ -102,6 +116,31 @@ class MatchService {
         } catch (error) {
             console.error('Error updating profile:', error);
             throw error;
+        }
+    }
+
+    async syncPushToken(existingToken = null) {
+        try {
+            if (!apiService.getToken()) {
+                return null;
+            }
+
+            const fcmToken = existingToken || await getFcmTokenForLogin();
+
+            if (!fcmToken) {
+                return null;
+            }
+
+            await apiService.patch('/profile', { fcm_token: fcmToken });
+
+            if (this.currentUser) {
+                this.currentUser = { ...this.currentUser, fcm_token: fcmToken };
+            }
+
+            return fcmToken;
+        } catch (error) {
+            console.error('Error syncing push token:', error);
+            return null;
         }
     }
 
@@ -168,6 +207,16 @@ class MatchService {
             return await apiService.post(`/notifications/${notificationId}/read`);
         } catch (error) {
             console.error('Error marking notification as read:', error);
+            throw error;
+        }
+    }
+
+    async sendTestPushNotification(title = 'Test', body = 'Push funcionando') {
+        try {
+            const params = new URLSearchParams({ title, body });
+            return await apiService.get(`/notifications/test-push?${params.toString()}`);
+        } catch (error) {
+            console.error('Error sending test push notification:', error);
             throw error;
         }
     }

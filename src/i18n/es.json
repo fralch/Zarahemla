@@ -100,6 +100,7 @@
   "tabs": {
     "swipe": "Explorar",
     "matches": "Matches",
+    "notifications": "Alertas",
     "profile": "Perfil"
   }
 }

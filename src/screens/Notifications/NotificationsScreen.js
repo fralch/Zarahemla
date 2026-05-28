@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
+import { ActivityIndicator, Alert, View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ const NotificationsScreen = ({ navigation }) => {
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
+    const [sendingTest, setSendingTest] = useState(false);
     const insets = useSafeAreaInsets();
     const { t } = useTranslation();
 
@@ -35,6 +36,21 @@ const NotificationsScreen = ({ navigation }) => {
         loadNotifications();
     };
 
+    const handleSendTestPush = async () => {
+        setSendingTest(true);
+        try {
+            const result = await MatchService.sendTestPushNotification();
+            Alert.alert(
+                'Push de prueba',
+                `Enviadas: ${result.sent || 0}. Fallidas: ${result.failed || 0}. Dispositivos: ${result.devices_targeted || 0}.`
+            );
+        } catch (error) {
+            Alert.alert('Push de prueba', error.message || 'No se pudo enviar la notificacion de prueba.');
+        } finally {
+            setSendingTest(false);
+        }
+    };
+
     const handleNotificationPress = async (item) => {
         if (!item.is_read) {
             try {
@@ -53,7 +69,23 @@ const NotificationsScreen = ({ navigation }) => {
             navigation.navigate('Matches');
         } else if (item.type === 'message') {
             navigation.navigate('Matches');
+        } else if (item.type === 'photo_rejected') {
+            navigation.navigate('Profile');
         }
+    };
+
+    const getNotificationIcon = (type) => {
+        if (type === 'match') return 'heart';
+        if (type === 'message') return 'chatbubble';
+        if (type === 'photo_rejected') return 'image';
+        return 'notifications';
+    };
+
+    const getNotificationColor = (type) => {
+        if (type === 'match') return colors.primary;
+        if (type === 'message') return colors.success;
+        if (type === 'photo_rejected') return colors.error;
+        return colors.primary;
     };
 
     const renderItem = ({ item }) => (
@@ -61,9 +93,9 @@ const NotificationsScreen = ({ navigation }) => {
             style={[styles.notificationItem, !item.is_read && styles.unreadItem]}
             onPress={() => handleNotificationPress(item)}
         >
-            <View style={[styles.iconContainer, { backgroundColor: item.type === 'match' ? colors.primary : colors.success }]}>
+            <View style={[styles.iconContainer, { backgroundColor: getNotificationColor(item.type) }]}>
                 <Ionicons 
-                    name={item.type === 'match' ? 'heart' : 'chatbubble'} 
+                    name={getNotificationIcon(item.type)}
                     size={24} 
                     color="#FFF" 
                 />
@@ -85,6 +117,18 @@ const NotificationsScreen = ({ navigation }) => {
         <View style={[styles.container, { paddingTop: insets.top }]}>
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>{t('notifications.title', 'Notifications')}</Text>
+                <TouchableOpacity
+                    style={[styles.testButton, sendingTest && styles.testButtonDisabled]}
+                    onPress={handleSendTestPush}
+                    disabled={sendingTest}
+                >
+                    {sendingTest ? (
+                        <ActivityIndicator size="small" color="#FFF" />
+                    ) : (
+                        <Ionicons name="paper-plane-outline" size={18} color="#FFF" />
+                    )}
+                    <Text style={styles.testButtonText}>Test push</Text>
+                </TouchableOpacity>
             </View>
             
             <FlatList
@@ -112,6 +156,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F8F8',
     },
     header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingVertical: 15,
         borderBottomWidth: 1,
@@ -122,6 +169,23 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         color: '#000',
+    },
+    testButton: {
+        minHeight: 38,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        backgroundColor: colors.primary,
+    },
+    testButtonDisabled: {
+        opacity: 0.7,
+    },
+    testButtonText: {
+        color: '#FFF',
+        fontSize: 13,
+        fontWeight: '700',
     },
     listContent: {
         flexGrow: 1,

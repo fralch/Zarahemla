@@ -32,9 +32,9 @@
       "expo-secure-store",
       "expo-localization",
       [
-        "@react-native-firebase/app",
+        "expo-notifications",
         {
-          "googleServicesFile": "./google-services.json"
+          "defaultChannel": "default"
         }
       ]
     ]
