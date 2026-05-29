@@ -250,21 +250,26 @@ const RegisterScreen = ({ navigation }) => {
                                 onRightIconPress={() => setShowPassword(!showPassword)}
                             />
 
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={styles.termsContainer}
                                 onPress={() => setAcceptedTerms(!acceptedTerms)}
                                 activeOpacity={0.7}
                             >
                                 <View style={[
-                                    styles.checkbox, 
+                                    styles.checkbox,
                                     { borderColor: colors.primary },
                                     acceptedTerms && { backgroundColor: colors.primary }
                                 ]}>
                                     {acceptedTerms && <Ionicons name="checkmark" size={16} color="white" />}
                                 </View>
                                 <Text style={[styles.termsText, { color: colors.textSecondary }]}>
-                                    {t('register.acceptTerms')} <Text style={{ color: colors.primary, fontWeight: '600' }}>{t('register.termsAndConditions')}</Text>
+                                    {t('register.acceptTerms')}{' '}
                                 </Text>
+                                <TouchableOpacity onPress={() => navigation.navigate('Terms')}>
+                                    <Text style={{ color: colors.primary, fontWeight: '600', textDecorationLine: 'underline' }}>
+                                        {t('register.termsAndConditions')}
+                                    </Text>
+                                </TouchableOpacity>
                             </TouchableOpacity>
                         </>
                     )}

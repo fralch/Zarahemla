@@ -10,6 +10,7 @@ import MatchDetailScreen from '../screens/Matches/MatchDetailScreen';
 import ProfileScreen from '../screens/Profile';
 import EditProfileScreen from '../screens/Profile/EditProfileScreen';
 import NotificationsScreen from '../screens/Notifications/NotificationsScreen';
+import TermsScreen from '../screens/Terms';
 import { useTheme } from '../theme/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import MatchService from '../services/MatchService';
@@ -109,6 +110,7 @@ export default function AppNavigator() {
                 <Stack.Screen name="Notifications" component={NotificationsScreen} />
                 <Stack.Screen name="MatchDetail" component={MatchDetailScreen} />
                 <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+                <Stack.Screen name="Terms" component={TermsScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );
