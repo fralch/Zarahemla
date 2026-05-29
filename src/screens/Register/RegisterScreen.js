@@ -262,14 +262,16 @@ const RegisterScreen = ({ navigation }) => {
                                 ]}>
                                     {acceptedTerms && <Ionicons name="checkmark" size={16} color="white" />}
                                 </View>
-                                <Text style={[styles.termsText, { color: colors.textSecondary }]}>
-                                    {t('register.acceptTerms')}{' '}
-                                </Text>
-                                <TouchableOpacity onPress={() => navigation.navigate('Terms')}>
-                                    <Text style={{ color: colors.primary, fontWeight: '600', textDecorationLine: 'underline' }}>
-                                        {t('register.termsAndConditions')}
+                                <View style={styles.termsTextContainer}>
+                                    <Text style={[styles.termsText, { color: colors.textSecondary }]}>
+                                        {t('register.acceptTerms')}{' '}
                                     </Text>
-                                </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => navigation.navigate('Terms')}>
+                                        <Text style={{ color: colors.primary, fontWeight: '600', textDecorationLine: 'underline', fontSize: 14 }}>
+                                            {t('register.termsAndConditions')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
                             </TouchableOpacity>
                         </>
                     )}
@@ -708,9 +710,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginRight: 10,
     },
+    termsTextContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+    },
     termsText: {
         fontSize: 14,
-        flex: 1,
     },
 });
 
