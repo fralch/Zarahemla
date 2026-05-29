@@ -29,6 +29,7 @@ const RegisterScreen = ({ navigation }) => {
     const [countryCode, setCountryCode] = useState('+52');
     const [showCountryPicker, setShowCountryPicker] = useState(false);
     const [image, setImage] = useState(null);
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
 
     const { theme } = useTheme();
     const colors = theme.colors;
@@ -85,6 +86,10 @@ const RegisterScreen = ({ navigation }) => {
             showAlert(t('register.error'), t('register.photoRequired'), 'warning');
             return false;
         }
+        if (!acceptedTerms) {
+            showAlert(t('register.error'), t('register.termsRequired'), 'warning');
+            return false;
+        }
         return true;
     };
 
@@ -109,6 +114,9 @@ const RegisterScreen = ({ navigation }) => {
     };
 
     const handleNext = () => {
+        if (!acceptedTerms) {
+            setAcceptedTerms(true);
+        }
         if (step === 1 && validateStep1()) {
             setStep(2);
         } else if (step === 2 && validateStep2()) {
@@ -241,6 +249,23 @@ const RegisterScreen = ({ navigation }) => {
                                 rightIcon={showPassword ? "eye-off-outline" : "eye-outline"}
                                 onRightIconPress={() => setShowPassword(!showPassword)}
                             />
+
+                            <TouchableOpacity 
+                                style={styles.termsContainer}
+                                onPress={() => setAcceptedTerms(!acceptedTerms)}
+                                activeOpacity={0.7}
+                            >
+                                <View style={[
+                                    styles.checkbox, 
+                                    { borderColor: colors.primary },
+                                    acceptedTerms && { backgroundColor: colors.primary }
+                                ]}>
+                                    {acceptedTerms && <Ionicons name="checkmark" size={16} color="white" />}
+                                </View>
+                                <Text style={[styles.termsText, { color: colors.textSecondary }]}>
+                                    {t('register.acceptTerms')} <Text style={{ color: colors.primary, fontWeight: '600' }}>{t('register.termsAndConditions')}</Text>
+                                </Text>
+                            </TouchableOpacity>
                         </>
                     )}
 
@@ -660,6 +685,27 @@ const styles = StyleSheet.create({
         fontSize: 13,
         marginLeft: 10,
         lineHeight: 18,
+    },
+    termsContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        marginTop: 10,
+        marginBottom: 5,
+        paddingHorizontal: 5,
+    },
+    checkbox: {
+        width: 22,
+        height: 22,
+        borderRadius: 6,
+        borderWidth: 2,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 10,
+    },
+    termsText: {
+        fontSize: 14,
+        flex: 1,
     },
 });
 

@@ -44,6 +44,9 @@
     "ageRequired": "Please enter your age (18-99)",
     "descriptionRequired": "Please write a description (at least 10 characters)",
     "instagramRequired": "Please enter your Instagram username or link",
+    "termsRequired": "You must accept the Terms and Conditions",
+    "acceptTerms": "I accept the",
+    "termsAndConditions": "Terms and Conditions",
     "hasAccount": "Already have an account?",
     "login": "Login"
   },
